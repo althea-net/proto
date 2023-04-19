@@ -1,3 +1,6 @@
 [submodule "cosmos-sdk"]
 	path = cosmos-sdk
 	url = https://github.com/cosmos/cosmos-sdk.git
+[submodule "althea-chain"]
+	path = althea-chain
+	url = https://github.com/althea-net/althea-chain.git
