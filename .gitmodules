@@ -4,3 +4,6 @@
 [submodule "althea-chain"]
 	path = althea-chain
 	url = https://github.com/althea-net/althea-chain.git
+[submodule "gravity"]
+	path = gravity
+	url = https://github.com/gravity-bridge/gravity-bridge.git
