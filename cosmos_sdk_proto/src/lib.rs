@@ -6,17 +6,17 @@
 #![forbid(unsafe_code)]
 #![warn(trivial_casts, trivial_numeric_casts, unused_import_braces)]
 
-// /// Bech32ibc protobuf definitions
-// #[cfg(feature = "bech32ibc")]
-// #[cfg_attr(docsrs, doc(cfg(feature = "bech32ibc")))]
-// pub mod bech32ibc {
-//     /// Bech32 prefix -> IBC Channel mapping
-//     pub mod bech32ibc {
-//         pub mod v1 {
-//             include!("prost/bech32ibc.bech32ibc.v1beta1.rs");
-//         }
-//     }
-// }
+/// Bech32ibc protobuf definitions
+#[cfg(feature = "bech32ibc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bech32ibc")))]
+pub mod bech32ibc {
+    /// Bech32 prefix -> IBC Channel mapping
+    pub mod bech32ibc {
+        pub mod v1 {
+            include!("prost/bech32ibc.bech32ibc.v1beta1.rs");
+        }
+    }
+}
 
 /// Cosmos protobuf definitions.
 pub mod cosmos {
