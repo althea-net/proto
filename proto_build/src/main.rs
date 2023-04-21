@@ -12,11 +12,13 @@ use std::{path::{Path, PathBuf}, fs::{self, remove_dir_all, create_dir_all}, ffi
 use althea::althea_main;
 use cosmos_sdk::{RootDirs, cosmos_main};
 use env_logger::Env;
+use gravity::gravity_main;
 use regex::Regex;
 use walkdir::WalkDir;
 
 pub mod althea;
 pub mod cosmos_sdk;
+pub mod gravity;
 
 #[macro_use]
 extern crate log;
@@ -74,10 +76,7 @@ fn main() {
         &COSMOS_OUT_PATH,
     );
     // Initiate Gravity
-    
-    // let out_path = Path::new(&OUT_PATH);
-    // let tmp_path = Path::new(&TMP_PATH);
-    // compile_protos(out_path, tmp_path);
+    gravity_main(&GRAVITY_ROOT, &TMP_PATH, &GRAVITY_OUT_PATH);
 }
 
 fn compile_protos(proto_paths: &[PathBuf], proto_include_paths: &[PathBuf], tmp_path: &Path, out_path: &Path, clean_tmp: bool, clean_out: bool) {
