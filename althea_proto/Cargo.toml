@@ -1,11 +1,11 @@
 [package]
 name = "althea_proto"
-version = "0.0.3"
+version = "0.1.0"
 description = "Protobuf stuct defintions for interacting with Althea Chain"
 authors = ["Justin Kilpatrick <justin@althea.net>", "Christian Borst <christian@althea.systems>"]
 edition = "2018"
 license = "Apache-2.0"
-repository = "https://github.com/althea-net/althea-chain/tree/main/integration_tests/althea_proto"
+repository = "https://github.com/althea-net/proto/tree/main/althea_proto"
 readme = "README.md"
 categories = ["cryptography", "cryptography::cryptocurrencies"]
 keywords = ["blockchain", "cosmos", "tendermint", "proto"]
@@ -15,6 +15,6 @@ keywords = ["blockchain", "cosmos", "tendermint", "proto"]
 [dependencies]
 prost = {workspace = true}
 prost-types = {workspace = true}
-cosmos-sdk-proto = {package="cosmos-sdk-proto-althea", path = "../cosmos_sdk_proto", features = ["ethermint"]}
+cosmos-sdk-proto = {package="cosmos-sdk-proto-althea", version="0.14.0", path = "../cosmos_sdk_proto", features = ["ethermint"]}
 tonic = {workspace = true}
 
