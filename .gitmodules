@@ -7,3 +7,12 @@
 [submodule "gravity"]
 	path = gravity
 	url = https://github.com/gravity-bridge/gravity-bridge.git
+[submodule "tendermint"]
+	path = tendermint
+	url = https://github.com/informalsystems/tendermint.git
+[submodule "ibc-go"]
+	path = ibc-go
+	url = https://github.com/cosmos/ibc-go
+[submodule "bech32-ibc"]
+	path = bech32-ibc
+	url = https://github.com/althea-net/bech32-ibc
