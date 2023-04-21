@@ -20,7 +20,7 @@ pub fn althea_main(root: &str, tmp: &str, out: &str) {
 
 // Aggregates all of the directories needed for protoc to compile the Althea protos + upstream proto dependencies
 fn compile_althea_protos(root_path: &Path, tmp_path: &Path, out_path: &Path) {
-    println!(
+    info!(
         "[info] Compiling .proto files to Rust into '{}'...",
         out_path.display()
     );
@@ -56,5 +56,5 @@ fn compile_althea_protos(root_path: &Path, tmp_path: &Path, out_path: &Path) {
     // which insists that any passed file be included in a directory passed as an include
     let proto_include_paths = [althea_proto_include_dir, third_party_proto_include_dir];
 
-    compile_protos(&proto_paths, &proto_include_paths, tmp_path, out_path);
+    compile_protos(&proto_paths, &proto_include_paths, tmp_path, out_path, true, true);
 }
