@@ -8,18 +8,31 @@
 // re-write calls to super::super::cosmos as cosmos-sdk-proto::cosmos
 
 use std::{path::Path};
-use crate::compile_protos;
+use crate::{compile_protos, RegexReplace, COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE};
+
+/// Protos belonging to these Protobuf packages will be excluded
+/// (i.e. because they are generated in 'cosmos-sdk-proto`)
+pub const EXCLUDED_PROTO_PACKAGES: &[&'static str] = &[
+    "gogoproto",
+    "google",
+    "cosmos_proto",
+    "cosmos",
+    "tendermint",
+];
 
 /// Compiles all the protos for the althea-chain project, including the upstream dependencies from canto and evmos
 pub fn althea_main(root: &str, tmp: &str, out: &str) {
+    // Regex fixes for super::[super::, ...]cosmos
+    let regex_replacements: Vec<RegexReplace> = vec![COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE];
+
     let root_path = Path::new(root);
     let tmp_path = Path::new(tmp);
     let out_path = Path::new(out);
-    compile_althea_protos(root_path, tmp_path, out_path);
+    compile_althea_protos(root_path, tmp_path, out_path, &regex_replacements);
 }
 
 // Aggregates all of the directories needed for protoc to compile the Althea protos + upstream proto dependencies
-fn compile_althea_protos(root_path: &Path, tmp_path: &Path, out_path: &Path) {
+fn compile_althea_protos(root_path: &Path, tmp_path: &Path, out_path: &Path, regex_replacements: &[RegexReplace]) {
     info!(
         "[info] Compiling .proto files to Rust into '{}'...",
         out_path.display()
@@ -39,6 +52,7 @@ fn compile_althea_protos(root_path: &Path, tmp_path: &Path, out_path: &Path) {
     let mut third_party_proto_include_dir = root.clone();
     third_party_proto_include_dir.push("third_party/proto");
 
+    // TODO: Generate these in their own crates
     // Third party protos which are not maintained
     let mut ethermint_proto_dir = root.clone();
     ethermint_proto_dir.push("third_party/proto/ethermint");
@@ -56,5 +70,5 @@ fn compile_althea_protos(root_path: &Path, tmp_path: &Path, out_path: &Path) {
     // which insists that any passed file be included in a directory passed as an include
     let proto_include_paths = [althea_proto_include_dir, third_party_proto_include_dir];
 
-    compile_protos(&proto_paths, &proto_include_paths, tmp_path, out_path, true, true);
+    compile_protos(&proto_paths, &proto_include_paths, regex_replacements, EXCLUDED_PROTO_PACKAGES, tmp_path, out_path, true, true);
 }
