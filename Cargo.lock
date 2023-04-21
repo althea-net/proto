@@ -13,7 +13,7 @@ dependencies = [
 
 [[package]]
 name = "althea_proto"
-version = "0.0.3"
+version = "0.1.0"
 dependencies = [
  "cosmos-sdk-proto-althea",
  "prost",
@@ -163,7 +163,7 @@ dependencies = [
 
 [[package]]
 name = "cosmos-sdk-proto-althea"
-version = "0.13.3"
+version = "0.14.0"
 dependencies = [
  "prost",
  "prost-types",
