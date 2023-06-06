@@ -106,6 +106,21 @@ pub struct PacketState {
     #[prost(bytes="vec", tag="4")]
     pub data: ::prost::alloc::vec::Vec<u8>,
 }
+/// PacketId is an identifer for a unique Packet
+/// Source chains refer to packets by source port/channel
+/// Destination chains refer to packets by destination port/channel
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PacketId {
+    /// channel port identifier
+    #[prost(string, tag="1")]
+    pub port_id: ::prost::alloc::string::String,
+    /// channel unique identifier
+    #[prost(string, tag="2")]
+    pub channel_id: ::prost::alloc::string::String,
+    /// packet sequence
+    #[prost(uint64, tag="3")]
+    pub sequence: u64,
+}
 /// Acknowledgement is the recommended acknowledgement format to be used by
 /// app-specific protocols.
 /// NOTE: The field numbers 21 and 22 were explicitly chosen to avoid accidental
@@ -928,8 +943,8 @@ pub struct MsgChannelOpenInitResponse {
 pub struct MsgChannelOpenTry {
     #[prost(string, tag="1")]
     pub port_id: ::prost::alloc::string::String,
-    /// in the case of crossing hello's, when both chains call OpenInit, we need
-    /// the channel identifier of the previous channel in state INIT
+    /// Deprecated: this field is unused. Crossing hello's are no longer supported in core IBC.
+    #[deprecated]
     #[prost(string, tag="2")]
     pub previous_channel_id: ::prost::alloc::string::String,
     /// NOTE: the version field within the channel has been deprecated. Its value will be ignored by core IBC.
