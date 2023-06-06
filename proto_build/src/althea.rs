@@ -7,12 +7,12 @@
 // go to althea_proto/prost
 // re-write calls to super::super::cosmos as cosmos-sdk-proto::cosmos
 
-use std::{path::Path};
 use crate::{compile_protos, RegexReplace, COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE};
+use std::path::Path;
 
 /// Protos belonging to these Protobuf packages will be excluded
 /// (i.e. because they are generated in 'cosmos-sdk-proto`)
-pub const EXCLUDED_PROTO_PACKAGES: &[&'static str] = &[
+pub const EXCLUDED_PROTO_PACKAGES: &[&str] = &[
     "gogoproto",
     "google",
     "cosmos_proto",
@@ -32,7 +32,12 @@ pub fn althea_main(root: &str, tmp: &str, out: &str) {
 }
 
 // Aggregates all of the directories needed for protoc to compile the Althea protos + upstream proto dependencies
-fn compile_althea_protos(root_path: &Path, tmp_path: &Path, out_path: &Path, regex_replacements: &[RegexReplace]) {
+fn compile_althea_protos(
+    root_path: &Path,
+    tmp_path: &Path,
+    out_path: &Path,
+    regex_replacements: &[RegexReplace],
+) {
     info!(
         "[info] Compiling .proto files to Rust into '{}'...",
         out_path.display()
@@ -70,5 +75,14 @@ fn compile_althea_protos(root_path: &Path, tmp_path: &Path, out_path: &Path, reg
     // which insists that any passed file be included in a directory passed as an include
     let proto_include_paths = [althea_proto_include_dir, third_party_proto_include_dir];
 
-    compile_protos(&proto_paths, &proto_include_paths, regex_replacements, EXCLUDED_PROTO_PACKAGES, tmp_path, out_path, true, true);
+    compile_protos(
+        &proto_paths,
+        &proto_include_paths,
+        regex_replacements,
+        EXCLUDED_PROTO_PACKAGES,
+        tmp_path,
+        out_path,
+        true,
+        true,
+    );
 }

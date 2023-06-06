@@ -7,13 +7,16 @@
 //! proto files for further compilation. This is based on the proto-compiler code
 //! in github.com/informalsystems/ibc-rs
 
-use std::{path::{Path, PathBuf}, fs};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
 use walkdir::WalkDir;
 
 use crate::{compile_protos, copy_generated_files, RegexReplace};
 
-pub struct RootDirs{
+pub struct RootDirs {
     pub cosmos: String,
     pub bech32ibc: String,
     pub tendermint: String,
@@ -22,13 +25,13 @@ pub struct RootDirs{
 
 /// Protos belonging to these Protobuf packages will be excluded
 /// (i.e. because they are sourced from `tendermint-proto` or `cosmos-sdk-proto`)
-pub const EXCLUDED_PROTO_PACKAGES: &[&'static str] = &[
+pub const EXCLUDED_PROTO_PACKAGES: &[&str] = &[
     "gogoproto",
     "google",
     "cosmos_proto",
     // staking/v1beta1/authz.proto has a poorly-defined message called StakeAuthorization.
     // It has been manually fixed but we must prevent recompilation to avoid manual work on every execution
-    "cosmos.staking.v1beta1"
+    "cosmos.staking.v1beta1",
 ];
 /// Regex fixes for super::[super::, ...]cosmos and similarly for tendermint
 pub const COSMOS_SDK_PROTO_REGEX: &str = "(super::)+cosmos";
@@ -36,8 +39,10 @@ pub const COSMOS_SDK_PROTO_REPLACE: &str = "crate::cosmos";
 pub const TENDERMINT_PROTO_REGEX: &str = "(super::)+tendermint";
 pub const TENDERMINT_PROTO_REPLACE: &str = "crate::tendermint";
 
-pub const COSMOS_REGEX_REPLACE: RegexReplace = RegexReplace::new(COSMOS_SDK_PROTO_REGEX, COSMOS_SDK_PROTO_REPLACE);
-pub const TENDERMINT_REGEX_REPLACE: RegexReplace = RegexReplace::new(TENDERMINT_PROTO_REGEX, TENDERMINT_PROTO_REPLACE);
+pub const COSMOS_REGEX_REPLACE: RegexReplace =
+    RegexReplace::new(COSMOS_SDK_PROTO_REGEX, COSMOS_SDK_PROTO_REPLACE);
+pub const TENDERMINT_REGEX_REPLACE: RegexReplace =
+    RegexReplace::new(TENDERMINT_PROTO_REGEX, TENDERMINT_PROTO_REPLACE);
 
 /// Initiates the compilation of the cosmos-sdk, tendermint, ibc, and bech32-ibc protos
 pub fn cosmos_main(roots: RootDirs, tmp_dir: &str, out_dir: &str) {
@@ -48,13 +53,38 @@ pub fn cosmos_main(roots: RootDirs, tmp_dir: &str, out_dir: &str) {
     // the manner cosmos-sdk-proto performs this work (for now)
 
     // TODO: Split each project off into its own compilation directory + crate
-    compile_bech32ibc_protos_and_services(Path::new(&roots.bech32ibc), Path::new(tmp_dir), Path::new(out_dir), &regex_replacements);
-    compile_ibc_protos_and_services(Path::new(&roots.ibc), Path::new(tmp_dir), Path::new(out_dir), &regex_replacements);
-    compile_sdk_protos_and_services(Path::new(&roots.cosmos), Path::new(tmp_dir), Path::new(out_dir), &regex_replacements);
-    compile_tendermint_protos_and_services(Path::new(&roots.tendermint), Path::new(tmp_dir), Path::new(out_dir), &regex_replacements);
+    compile_bech32ibc_protos_and_services(
+        Path::new(&roots.bech32ibc),
+        Path::new(tmp_dir),
+        Path::new(out_dir),
+        &regex_replacements,
+    );
+    compile_ibc_protos_and_services(
+        Path::new(&roots.ibc),
+        Path::new(tmp_dir),
+        Path::new(out_dir),
+        &regex_replacements,
+    );
+    compile_sdk_protos_and_services(
+        Path::new(&roots.cosmos),
+        Path::new(tmp_dir),
+        Path::new(out_dir),
+        &regex_replacements,
+    );
+    compile_tendermint_protos_and_services(
+        Path::new(&roots.tendermint),
+        Path::new(tmp_dir),
+        Path::new(out_dir),
+        &regex_replacements,
+    );
 }
 
-fn compile_sdk_protos_and_services(root: &Path, tmp_path: &Path, out_path: &Path, regex_replacements: &[RegexReplace]) {
+fn compile_sdk_protos_and_services(
+    root: &Path,
+    tmp_path: &Path,
+    out_path: &Path,
+    regex_replacements: &[RegexReplace],
+) {
     info!(
         "Compiling cosmos-sdk .proto files to Rust into '{}'...",
         out_path.display(),
@@ -83,19 +113,37 @@ fn compile_sdk_protos_and_services(root: &Path, tmp_path: &Path, out_path: &Path
         &format!("{}proto/cosmos/tx", root.display()),
         &format!("{}proto/cosmos/upgrade", root.display()),
         &format!("{}proto/cosmos/vesting", root.display()),
-    ].map(Path::new).map(Path::to_path_buf);
+    ]
+    .map(Path::new)
+    .map(Path::to_path_buf);
 
     let proto_include_paths = [
         &format!("{}proto", root.display()),
         &format!("{}third_party/proto", root.display()),
-    ].map(Path::new).map(Path::to_path_buf);
+    ]
+    .map(Path::new)
+    .map(Path::to_path_buf);
 
-    compile_protos(&proto_paths, &proto_include_paths, regex_replacements, EXCLUDED_PROTO_PACKAGES, tmp_path, out_path, false, false);
+    compile_protos(
+        &proto_paths,
+        &proto_include_paths,
+        regex_replacements,
+        EXCLUDED_PROTO_PACKAGES,
+        tmp_path,
+        out_path,
+        false,
+        false,
+    );
 
     info!("=> Done!");
 }
 
-fn compile_tendermint_protos_and_services(root: &Path, tmp_path: &Path, out_path: &Path, regex_replacements: &[RegexReplace]) {
+fn compile_tendermint_protos_and_services(
+    root: &Path,
+    tmp_path: &Path,
+    out_path: &Path,
+    regex_replacements: &[RegexReplace],
+) {
     info!(
         "Compiling tendermint .proto files to Rust into '{}'...",
         out_path.display()
@@ -120,13 +168,17 @@ fn compile_tendermint_protos_and_services(root: &Path, tmp_path: &Path, out_path
         &format!("{}proto/tendermint/store", root.display()),
         &format!("{}proto/tendermint/types", root.display()),
         &format!("{}proto/tendermint/version", root.display()),
-    ].map(Path::new).map(Path::to_path_buf);
+    ]
+    .map(Path::new)
+    .map(Path::to_path_buf);
 
     let proto_include_paths = [
         &format!("{}proto", root.display()),
         &format!("{}proto/tendermint", root.display()),
         &format!("{}third_party/proto", root.display()),
-    ].map(Path::new).map(Path::to_path_buf);
+    ]
+    .map(Path::new)
+    .map(Path::to_path_buf);
 
     // Tendermint protos are clobbered by the tonic_build grpc step, so we do a custom compilation
     let mut protos: Vec<PathBuf> = vec![];
@@ -156,12 +208,24 @@ fn compile_tendermint_protos_and_services(root: &Path, tmp_path: &Path, out_path
         .compile_protos(&protos, &proto_include_paths)
         .unwrap();
 
-    copy_generated_files(tmp_path, out_path, regex_replacements, EXCLUDED_PROTO_PACKAGES, true, false);
+    copy_generated_files(
+        tmp_path,
+        out_path,
+        regex_replacements,
+        EXCLUDED_PROTO_PACKAGES,
+        true,
+        false,
+    );
 
     info!("[info ] => Done!");
 }
 
-fn compile_ibc_protos_and_services(root: &Path, tmp_path: &Path, out_path: &Path, regex_replacements: &[RegexReplace]) {
+fn compile_ibc_protos_and_services(
+    root: &Path,
+    tmp_path: &Path,
+    out_path: &Path,
+    regex_replacements: &[RegexReplace],
+) {
     info!(
         "Compiling ibc .proto files to Rust into '{}'...",
         out_path.display()
@@ -178,32 +242,61 @@ fn compile_ibc_protos_and_services(root: &Path, tmp_path: &Path, out_path: &Path
         &format!("{}proto/ibc/lightclients/localhost", root.display()),
         &format!("{}proto/ibc/lightclients/solomachine", root.display()),
         &format!("{}proto/ibc/lightclients/tendermint", root.display()),
-    ].map(Path::new).map(Path::to_path_buf);
+    ]
+    .map(Path::new)
+    .map(Path::to_path_buf);
 
     let proto_include_paths = [
         &format!("{}proto", root.display()),
         &format!("{}third_party/proto", root.display()),
-    ].map(Path::new).map(Path::to_path_buf);
+    ]
+    .map(Path::new)
+    .map(Path::to_path_buf);
 
-    compile_protos(&proto_paths, &proto_include_paths, regex_replacements, EXCLUDED_PROTO_PACKAGES, tmp_path, out_path, true, false);
+    compile_protos(
+        &proto_paths,
+        &proto_include_paths,
+        regex_replacements,
+        EXCLUDED_PROTO_PACKAGES,
+        tmp_path,
+        out_path,
+        true,
+        false,
+    );
 }
 
-fn compile_bech32ibc_protos_and_services(root: &Path, tmp_path: &Path, out_path: &Path, regex_replacements: &[RegexReplace]) {
+fn compile_bech32ibc_protos_and_services(
+    root: &Path,
+    tmp_path: &Path,
+    out_path: &Path,
+    regex_replacements: &[RegexReplace],
+) {
     info!(
         "Compiling bech32-ibc .proto files to Rust into '{}'...",
         out_path.display(),
     );
 
     // Paths
-    let proto_paths = [
-        &format!("{}proto/bech32ibc/", root.display()),
-    ].map(Path::new).map(Path::to_path_buf);
+    let proto_paths = [&format!("{}proto/bech32ibc/", root.display())]
+        .map(Path::new)
+        .map(Path::to_path_buf);
 
     let proto_include_paths = [
         &format!("{}proto", root.display()),
         &format!("{}third_party/proto", root.display()),
         &format!("{}proto/bech32ibc", root.display()),
-    ].map(Path::new).map(Path::to_path_buf);
+    ]
+    .map(Path::new)
+    .map(Path::to_path_buf);
 
-    compile_protos(&proto_paths, &proto_include_paths, regex_replacements, EXCLUDED_PROTO_PACKAGES, tmp_path, out_path, true, false);
+    compile_protos(
+        &proto_paths,
+        &proto_include_paths,
+        regex_replacements,
+        EXCLUDED_PROTO_PACKAGES,
+        tmp_path,
+        out_path,
+        true,
+        false,
+    );
 }

@@ -16,3 +16,6 @@
 [submodule "bech32-ibc"]
 	path = bech32-ibc
 	url = https://github.com/althea-net/bech32-ibc
+[submodule "ibc-test-chain"]
+	path = ibc-test-chain
+	url = https://github.com/althea-net/ibc-test-chain
