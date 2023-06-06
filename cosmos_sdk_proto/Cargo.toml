@@ -1,6 +1,6 @@
 [package]
 name = "cosmos-sdk-proto-althea"
-version = "0.14.0"
+version = "0.14.1"
 authors = [
     "Justin Kilpatrick <justin@althea.net>",
     "Christian Borst <christian@althea.systems>",
