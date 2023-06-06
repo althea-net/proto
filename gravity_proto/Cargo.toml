@@ -1,6 +1,6 @@
 [package]
 name = "gravity_proto"
-version = "0.1.0"
+version = "0.2.0"
 description = "Protobuf stuct defintions for interacting with Gravity Bridge Chain"
 authors = ["Justin Kilpatrick <justin@althea.net>", "Christian Borst <christian@althea.systems>"]
 edition = "2018"
