@@ -229,6 +229,23 @@ pub mod ibc {
                 include!("prost/ibc.applications.transfer.v2.rs");
             }
         }
+
+        /// ICA
+        pub mod interchain_accounts {
+            pub mod v1 {
+                include!("prost/ibc.applications.interchain_accounts.v1.rs");
+            }
+            pub mod controller {
+                pub mod v1 {
+                    include!("prost/ibc.applications.interchain_accounts.controller.v1.rs");
+                }
+            }
+            pub mod host {
+                pub mod v1 {
+                    include!("prost/ibc.applications.interchain_accounts.host.v1.rs");
+                }
+            }
+        }
     }
 
     /// IBC core.
