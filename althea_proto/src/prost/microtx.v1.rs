@@ -55,15 +55,13 @@ pub struct TokenizedAccount {
 }
 /// MsgTokenizeAccount A Msg meant to convert a wallet into a piece of Liquid Infrastructure,
 /// by creating a NonFungibleToken within the Althea L1 EVM which will control all balances
-/// held by the Tokenized Account (beyond a configurable threshold)
+/// held by the Tokenized Account (beyond a configurable threshold). The tokenized account itself
+/// will be the initial owner of the NFT, and must transfer control through the EVM NFT contract
 /// SENDER The bech32 address of the account to tokenize, must also be the signer of the message
-/// OWNER The bech32 address of the account initially in control of the token
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgTokenizeAccount {
     #[prost(string, tag="1")]
     pub sender: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
-    pub receiver: ::prost::alloc::string::String,
 }
 /// MsgTokenizeAccountResponse potentially returns useful information from the tokenization of an account
 #[derive(Clone, PartialEq, ::prost::Message)]
