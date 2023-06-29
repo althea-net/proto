@@ -2,21 +2,23 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
     #[prost(uint64, tag="1")]
-    pub xfer_fee_basis_points: u64,
+    pub microtx_fee_basis_points: u64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
     #[prost(message, optional, tag="1")]
     pub params: ::core::option::Option<Params>,
 }
-/// MsgXfer A Msg meant to send funds from one Althea network wallet to another,
-/// via an automated device.
+/// MsgMicrotx A Msg used to send funds from one Althea network wallet to another,
+/// via an automated device. Facilitates Liquid Infrastructure by automatically
+/// redirecting funds received by Tokenized Accounts beyond configured amounts to the EVM.
 /// SENDER The account sending funds to receiver, must also be the signer of the
 /// message
 /// RECEIVER The account receiving funds from sender
-/// AMOUNTS The tokens and their quantities which should be transferred
+/// AMOUNTS The tokens and their quantities which should be transferred, these
+/// must be Cosmos coins registered as ERC20s, or the Cosmos representation of ERC20s
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgXfer {
+pub struct MsgMicrotx {
     #[prost(string, tag="1")]
     pub sender: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
@@ -25,12 +27,12 @@ pub struct MsgXfer {
     pub amounts: ::prost::alloc::vec::Vec<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgXferResponse {
+pub struct MsgMicrotxResponse {
 }
-/// A type for the block's event log, every successful Xfer must create one of
+/// A type for the block's event log, every successful Microtx must create one of
 /// these in the event log
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventXfer {
+pub struct EventMicrotx {
     #[prost(string, tag="1")]
     pub sender: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
@@ -39,6 +41,15 @@ pub struct EventXfer {
     pub amounts: ::prost::alloc::vec::Vec<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
     #[prost(message, repeated, tag="4")]
     pub fee: ::prost::alloc::vec::Vec<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
+}
+/// A type for the block's event log recording when a TokenizedAccount has a received balance redirected to
+/// its registered TokenizedAccountNFT
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EventBalanceRedirect {
+    #[prost(string, tag="1")]
+    pub account: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag="2")]
+    pub amounts: ::prost::alloc::vec::Vec<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
 }
 /// Records critical information about a Tokenized Account
 /// TOKENIZED_ACCOUNT The bech32 address of the tokenized account
@@ -74,10 +85,8 @@ pub struct MsgTokenizeAccountResponse {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EventAccountTokenized {
     #[prost(string, tag="1")]
-    pub owner: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
     pub owned: ::prost::alloc::string::String,
-    #[prost(string, tag="3")]
+    #[prost(string, tag="2")]
     pub nft_address: ::prost::alloc::string::String,
 }
 /// Generated client implementations.
@@ -145,11 +154,11 @@ pub mod msg_client {
             self.inner = self.inner.accept_gzip();
             self
         }
-        /// The Xfer service is a customizeable version of the bank module's Send
-        pub async fn xfer(
+        /// The Microtx service handles payments to Althea accounts
+        pub async fn microtx(
             &mut self,
-            request: impl tonic::IntoRequest<super::MsgXfer>,
-        ) -> Result<tonic::Response<super::MsgXferResponse>, tonic::Status> {
+            request: impl tonic::IntoRequest<super::MsgMicrotx>,
+        ) -> Result<tonic::Response<super::MsgMicrotxResponse>, tonic::Status> {
             self.inner
                 .ready()
                 .await
@@ -160,7 +169,7 @@ pub mod msg_client {
                     )
                 })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/microtx.v1.Msg/Xfer");
+            let path = http::uri::PathAndQuery::from_static("/microtx.v1.Msg/Microtx");
             self.inner.unary(request.into_request(), path, codec).await
         }
         /// The TokenizeAccount service converts a wallet into a piece of Liquid Infrastructure
@@ -194,14 +203,14 @@ pub struct QueryParamsResponse {
     #[prost(message, optional, tag="1")]
     pub params: ::core::option::Option<Params>,
 }
-/// Query the additional fee paid on MsgXfer, determined by governance
+/// Query the additional fee paid on MsgMicrotx, determined by governance
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryXferFeeRequest {
+pub struct QueryMicrotxFeeRequest {
     #[prost(uint64, tag="1")]
     pub amount: u64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryXferFeeResponse {
+pub struct QueryMicrotxFeeResponse {
     #[prost(uint64, tag="1")]
     pub fee_amount: u64,
 }
@@ -315,11 +324,11 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static("/microtx.v1.Query/Params");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        /// Get an authoritative fee amount which must be paid on Xfer
-        pub async fn xfer_fee(
+        /// Get an authoritative fee amount which must be paid on Microtx
+        pub async fn microtx_fee(
             &mut self,
-            request: impl tonic::IntoRequest<super::QueryXferFeeRequest>,
-        ) -> Result<tonic::Response<super::QueryXferFeeResponse>, tonic::Status> {
+            request: impl tonic::IntoRequest<super::QueryMicrotxFeeRequest>,
+        ) -> Result<tonic::Response<super::QueryMicrotxFeeResponse>, tonic::Status> {
             self.inner
                 .ready()
                 .await
@@ -330,7 +339,9 @@ pub mod query_client {
                     )
                 })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/microtx.v1.Query/XferFee");
+            let path = http::uri::PathAndQuery::from_static(
+                "/microtx.v1.Query/MicrotxFee",
+            );
             self.inner.unary(request.into_request(), path, codec).await
         }
         /// Get all of the tokenized accounts known to the module
