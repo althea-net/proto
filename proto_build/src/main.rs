@@ -38,7 +38,7 @@ pub const GRPC_CLIENT_ATTRIBUTES: &[&str] = &[
     TONIC_CLIENT_ATTRIBUTE,
 ];
 /// Root directories of the managed projects
-pub const ALTHEA_ROOT: &str = "../althea-chain/";
+pub const ALTHEA_ROOT: &str = "../althea-L1/";
 
 pub const COSMOS_SDK_ROOT: &str = "../cosmos-sdk/";
 pub const BECH32IBC_ROOT: &str = "../bech32-ibc/";
