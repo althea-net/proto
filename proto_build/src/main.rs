@@ -18,6 +18,7 @@ use std::{
 use althea::althea_main;
 use cosmos_sdk::{cosmos_main, RootDirs};
 use env_logger::Env;
+use git2::Repository;
 use gravity::{gravity_main, gravity_test};
 use regex::Regex;
 use walkdir::WalkDir;
@@ -38,15 +39,15 @@ pub const GRPC_CLIENT_ATTRIBUTES: &[&str] = &[
     TONIC_CLIENT_ATTRIBUTE,
 ];
 /// Root directories of the managed projects
-pub const ALTHEA_ROOT: &str = "../althea-L1/";
+pub const ALTHEA_ROOT: &str = "althea-L1/";
 
-pub const COSMOS_SDK_ROOT: &str = "../cosmos-sdk/";
-pub const BECH32IBC_ROOT: &str = "../bech32-ibc/";
-pub const TENDERMINT_ROOT: &str = "../tendermint/";
-pub const IBC_ROOT: &str = "../ibc-go/";
+pub const COSMOS_SDK_ROOT: &str = "cosmos-sdk/";
+pub const BECH32IBC_ROOT: &str = "bech32-ibc/";
+pub const TENDERMINT_ROOT: &str = "cometbft/";
+pub const IBC_ROOT: &str = "ibc-go/";
 
-pub const GRAVITY_ROOT: &str = "../gravity/";
-pub const GRAVITY_TEST_ROOT: &str = "../ibc-test-chain/";
+pub const GRAVITY_ROOT: &str = "gravity/";
+pub const GRAVITY_TEST_ROOT: &str = "ibc-test-chain/";
 
 /// A temporary directory for proto building
 pub const TMP_PATH: &str = "/tmp/proto/";
@@ -74,8 +75,57 @@ pub const COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE: RegexReplace = RegexReplace::new
     COSMOS_SDK_PROTO_CRATE_REPLACE,
 );
 
+/// Simple utility struct for representing a repo we need to manage
+pub struct RepoRef<'a> {
+    pub url: &'a str,
+    pub branch: &'a str,
+    pub repo_name: &'a str,
+}
+/// A list of repositories and git tags to clone, if you add a repo here
+/// please update .gitignore
+pub const REPOS_TO_CLONE: [RepoRef; 7] = [
+    RepoRef {
+        url: "https://github.com/gravity-bridge/gravity-bridge",
+        branch: "v1.10.1",
+        repo_name: "gravity-bridge",
+    },
+    RepoRef {
+        url: "https://github.com/cosmos/cosmos-sdk",
+        branch: "v0.47.4",
+        repo_name: "cosmos-sdk",
+    },
+    RepoRef {
+        url: "https://github.com/cosmos/ibc-go/",
+        branch: "v7.2.0",
+        repo_name: "ibc-go",
+    },
+    RepoRef {
+        url: "https://github.com/cometbft/cometbft/",
+        branch: "v0.37.2",
+        repo_name: "cometbft",
+    },
+    RepoRef {
+        url: "https://github.com/althea-net/ibc-test-chain/",
+        branch: "main",
+        repo_name: "ibc-test-chain",
+    },
+    RepoRef {
+        url: "https://github.com/althea-net/bech32-ibc/",
+        branch: "main",
+        repo_name: "bech32-ibc",
+    },
+    RepoRef {
+        url: "https://github.com/althea-net/althea-l1/",
+        branch: "v0.5.5",
+        repo_name: "althea-L1",
+    },
+];
+
 fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+
+    // checkout and update repos as needed
+    init_repos();
 
     // Initiate Althea
     althea_main(ALTHEA_ROOT, TMP_PATH, ALTHEA_OUT_PATH);
@@ -93,6 +143,39 @@ fn main() {
     // Initiate Gravity
     gravity_main(GRAVITY_ROOT, TMP_PATH, GRAVITY_OUT_PATH);
     gravity_test(GRAVITY_TEST_ROOT, TMP_PATH, GRAVITY_OUT_PATH);
+}
+
+fn init_repos() {
+    // delete all repos from a potential previous clone
+    for repo in REPOS_TO_CLONE {
+        let repo_path = Path::new(repo.repo_name);
+        // path exists update and checkout
+        let repo_ref = if repo_path.exists() {
+            match Repository::open(repo_path) {
+                Ok(repo) => repo,
+                Err(e) => panic!("failed to open, delete and run again: {}", e),
+            }
+        }
+        // path does not exist, clone
+        else {
+            git2::build::RepoBuilder::new()
+                .clone(repo.url, repo_path)
+                .expect("Failed to clone!")
+        };
+
+        let (object, reference) = repo_ref
+            .revparse_ext(repo.branch)
+            .expect("Could not find commit or branch name in repo!");
+        repo_ref.checkout_tree(&object, None).unwrap();
+
+        match reference {
+            // gref is an actual reference like branches or tags
+            Some(gref) => repo_ref.set_head(gref.name().unwrap()),
+            // this is a commit, not a reference
+            None => repo_ref.set_head_detached(object.id()),
+        }
+        .expect("Failed to set HEAD");
+    }
 }
 
 fn compile_protos(
@@ -129,9 +212,7 @@ fn compile_protos(
     // Compile all proto files
     let mut config = prost_build::Config::default();
     config.out_dir(tmp_path);
-    config
-        .compile_protos(&protos, proto_include_paths)
-        .unwrap();
+    config.compile_protos(&protos, proto_include_paths).unwrap();
 
     // Compile all proto client for GRPC services
     info!("[info ] Compiling proto clients for GRPC services!");

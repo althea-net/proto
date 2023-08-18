@@ -1,1 +1,8 @@
 /target
+proto_build/cosmos-sdk/
+proto_build/gravity-bridge/
+proto_build/ibc-go/
+proto_build/ibc-test-chain/
+proto_build/cometbft/
+proto_build/bech32-ibc/
+proto_build/althea-L1/

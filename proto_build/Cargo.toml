@@ -12,6 +12,7 @@ prost-build = {workspace = true}
 tonic-build = {workspace = true}
 log = {workspace=true}
 env_logger = {workspace=true}
+git2 = "0.17"
 
 walkdir = "2"
 regex = "1.5"
