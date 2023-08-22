@@ -1,52 +1,63 @@
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EpochInfo {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub identifier: ::prost::alloc::string::String,
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub start_time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(message, optional, tag="3")]
+    #[prost(message, optional, tag = "3")]
     pub duration: ::core::option::Option<::prost_types::Duration>,
-    #[prost(int64, tag="4")]
+    #[prost(int64, tag = "4")]
     pub current_epoch: i64,
-    #[prost(message, optional, tag="5")]
+    #[prost(message, optional, tag = "5")]
     pub current_epoch_start_time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(bool, tag="6")]
+    #[prost(bool, tag = "6")]
     pub epoch_counting_started: bool,
-    #[prost(int64, tag="7")]
+    #[prost(int64, tag = "7")]
     pub current_epoch_start_height: i64,
 }
 /// GenesisState defines the epochs module's genesis state.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
-    #[prost(message, repeated, tag="1")]
+    #[prost(message, repeated, tag = "1")]
     pub epochs: ::prost::alloc::vec::Vec<EpochInfo>,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryEpochsInfoRequest {
-    #[prost(message, optional, tag="1")]
-    pub pagination: ::core::option::Option<cosmos_sdk_proto::cosmos::base::query::v1beta1::PageRequest>,
+    #[prost(message, optional, tag = "1")]
+    pub pagination: ::core::option::Option<
+        cosmos_sdk_proto::cosmos::base::query::v1beta1::PageRequest,
+    >,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryEpochsInfoResponse {
-    #[prost(message, repeated, tag="1")]
+    #[prost(message, repeated, tag = "1")]
     pub epochs: ::prost::alloc::vec::Vec<EpochInfo>,
-    #[prost(message, optional, tag="2")]
-    pub pagination: ::core::option::Option<cosmos_sdk_proto::cosmos::base::query::v1beta1::PageResponse>,
+    #[prost(message, optional, tag = "2")]
+    pub pagination: ::core::option::Option<
+        cosmos_sdk_proto::cosmos::base::query::v1beta1::PageResponse,
+    >,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCurrentEpochRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub identifier: ::prost::alloc::string::String,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryCurrentEpochResponse {
-    #[prost(int64, tag="1")]
+    #[prost(int64, tag = "1")]
     pub current_epoch: i64,
 }
 /// Generated client implementations.
 pub mod query_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     /// Query defines the gRPC querier service.
     #[derive(Debug, Clone)]
     pub struct QueryClient<T> {
@@ -56,7 +67,7 @@ pub mod query_client {
         /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
-            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D: TryInto<tonic::transport::Endpoint>,
             D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
@@ -72,6 +83,10 @@ pub mod query_client {
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
             Self { inner }
         }
         pub fn with_interceptor<F>(
@@ -93,26 +108,45 @@ pub mod query_client {
         {
             QueryClient::new(InterceptedService::new(inner, interceptor))
         }
-        /// Compress requests with `gzip`.
+        /// Compress requests with the given encoding.
         ///
         /// This requires the server to support it otherwise it might respond with an
         /// error.
         #[must_use]
-        pub fn send_gzip(mut self) -> Self {
-            self.inner = self.inner.send_gzip();
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
             self
         }
-        /// Enable decompressing responses with `gzip`.
+        /// Enable decompressing responses.
         #[must_use]
-        pub fn accept_gzip(mut self) -> Self {
-            self.inner = self.inner.accept_gzip();
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
         /// EpochInfos provide running epochInfos
         pub async fn epoch_infos(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryEpochsInfoRequest>,
-        ) -> Result<tonic::Response<super::QueryEpochsInfoResponse>, tonic::Status> {
+        ) -> std::result::Result<
+            tonic::Response<super::QueryEpochsInfoResponse>,
+            tonic::Status,
+        > {
             self.inner
                 .ready()
                 .await
@@ -126,13 +160,19 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/canto.epochs.v1.Query/EpochInfos",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("canto.epochs.v1.Query", "EpochInfos"));
+            self.inner.unary(req, path, codec).await
         }
         /// CurrentEpoch provide current epoch of specified identifier
         pub async fn current_epoch(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryCurrentEpochRequest>,
-        ) -> Result<tonic::Response<super::QueryCurrentEpochResponse>, tonic::Status> {
+        ) -> std::result::Result<
+            tonic::Response<super::QueryCurrentEpochResponse>,
+            tonic::Status,
+        > {
             self.inner
                 .ready()
                 .await
@@ -146,7 +186,10 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/canto.epochs.v1.Query/CurrentEpoch",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("canto.epochs.v1.Query", "CurrentEpoch"));
+            self.inner.unary(req, path, codec).await
         }
     }
 }

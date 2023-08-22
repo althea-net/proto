@@ -1,40 +1,45 @@
 /// Params defines the set of on-chain interchain accounts parameters.
 /// The following parameters may be used to disable the controller submodule.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
     /// controller_enabled enables or disables the controller submodule.
-    #[prost(bool, tag="1")]
+    #[prost(bool, tag = "1")]
     pub controller_enabled: bool,
 }
 /// QueryInterchainAccountRequest is the request type for the Query/InterchainAccount RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryInterchainAccountRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub owner: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
+    #[prost(string, tag = "2")]
     pub connection_id: ::prost::alloc::string::String,
 }
 /// QueryInterchainAccountResponse the response type for the Query/InterchainAccount RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryInterchainAccountResponse {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub address: ::prost::alloc::string::String,
 }
 /// QueryParamsRequest is the request type for the Query/Params RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryParamsRequest {
-}
+pub struct QueryParamsRequest {}
 /// QueryParamsResponse is the response type for the Query/Params RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsResponse {
     /// params defines the parameters of the module.
-    #[prost(message, optional, tag="1")]
+    #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
 }
 /// Generated client implementations.
 pub mod query_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     /// Query provides defines the gRPC querier service.
     #[derive(Debug, Clone)]
     pub struct QueryClient<T> {
@@ -44,7 +49,7 @@ pub mod query_client {
         /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
-            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D: TryInto<tonic::transport::Endpoint>,
             D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
@@ -60,6 +65,10 @@ pub mod query_client {
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
             Self { inner }
         }
         pub fn with_interceptor<F>(
@@ -81,26 +90,42 @@ pub mod query_client {
         {
             QueryClient::new(InterceptedService::new(inner, interceptor))
         }
-        /// Compress requests with `gzip`.
+        /// Compress requests with the given encoding.
         ///
         /// This requires the server to support it otherwise it might respond with an
         /// error.
         #[must_use]
-        pub fn send_gzip(mut self) -> Self {
-            self.inner = self.inner.send_gzip();
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
             self
         }
-        /// Enable decompressing responses with `gzip`.
+        /// Enable decompressing responses.
         #[must_use]
-        pub fn accept_gzip(mut self) -> Self {
-            self.inner = self.inner.accept_gzip();
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
         /// InterchainAccount returns the interchain account address for a given owner address on a given connection
         pub async fn interchain_account(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryInterchainAccountRequest>,
-        ) -> Result<
+        ) -> std::result::Result<
             tonic::Response<super::QueryInterchainAccountResponse>,
             tonic::Status,
         > {
@@ -117,13 +142,24 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/ibc.applications.interchain_accounts.controller.v1.Query/InterchainAccount",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "ibc.applications.interchain_accounts.controller.v1.Query",
+                        "InterchainAccount",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
         }
         /// Params queries all parameters of the ICA controller submodule.
         pub async fn params(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryParamsRequest>,
-        ) -> Result<tonic::Response<super::QueryParamsResponse>, tonic::Status> {
+        ) -> std::result::Result<
+            tonic::Response<super::QueryParamsResponse>,
+            tonic::Status,
+        > {
             self.inner
                 .ready()
                 .await
@@ -137,7 +173,15 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/ibc.applications.interchain_accounts.controller.v1.Query/Params",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "ibc.applications.interchain_accounts.controller.v1.Query",
+                        "Params",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
         }
     }
 }

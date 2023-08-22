@@ -1,139 +1,162 @@
 /// GetValidatorSetByHeightRequest is the request type for the Query/GetValidatorSetByHeight RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetValidatorSetByHeightRequest {
-    #[prost(int64, tag="1")]
+    #[prost(int64, tag = "1")]
     pub height: i64,
     /// pagination defines an pagination for the request.
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub pagination: ::core::option::Option<super::super::query::v1beta1::PageRequest>,
 }
 /// GetValidatorSetByHeightResponse is the response type for the Query/GetValidatorSetByHeight RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetValidatorSetByHeightResponse {
-    #[prost(int64, tag="1")]
+    #[prost(int64, tag = "1")]
     pub block_height: i64,
-    #[prost(message, repeated, tag="2")]
+    #[prost(message, repeated, tag = "2")]
     pub validators: ::prost::alloc::vec::Vec<Validator>,
     /// pagination defines an pagination for the response.
-    #[prost(message, optional, tag="3")]
+    #[prost(message, optional, tag = "3")]
     pub pagination: ::core::option::Option<super::super::query::v1beta1::PageResponse>,
 }
 /// GetLatestValidatorSetRequest is the request type for the Query/GetValidatorSetByHeight RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetLatestValidatorSetRequest {
     /// pagination defines an pagination for the request.
-    #[prost(message, optional, tag="1")]
+    #[prost(message, optional, tag = "1")]
     pub pagination: ::core::option::Option<super::super::query::v1beta1::PageRequest>,
 }
 /// GetLatestValidatorSetResponse is the response type for the Query/GetValidatorSetByHeight RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetLatestValidatorSetResponse {
-    #[prost(int64, tag="1")]
+    #[prost(int64, tag = "1")]
     pub block_height: i64,
-    #[prost(message, repeated, tag="2")]
+    #[prost(message, repeated, tag = "2")]
     pub validators: ::prost::alloc::vec::Vec<Validator>,
     /// pagination defines an pagination for the response.
-    #[prost(message, optional, tag="3")]
+    #[prost(message, optional, tag = "3")]
     pub pagination: ::core::option::Option<super::super::query::v1beta1::PageResponse>,
 }
 /// Validator is the type for the validator-set.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Validator {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub address: ::prost::alloc::string::String,
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub pub_key: ::core::option::Option<::prost_types::Any>,
-    #[prost(int64, tag="3")]
+    #[prost(int64, tag = "3")]
     pub voting_power: i64,
-    #[prost(int64, tag="4")]
+    #[prost(int64, tag = "4")]
     pub proposer_priority: i64,
 }
 /// GetBlockByHeightRequest is the request type for the Query/GetBlockByHeight RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBlockByHeightRequest {
-    #[prost(int64, tag="1")]
+    #[prost(int64, tag = "1")]
     pub height: i64,
 }
 /// GetBlockByHeightResponse is the response type for the Query/GetBlockByHeight RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBlockByHeightResponse {
-    #[prost(message, optional, tag="1")]
-    pub block_id: ::core::option::Option<crate::tendermint::types::BlockId>,
-    #[prost(message, optional, tag="2")]
-    pub block: ::core::option::Option<crate::tendermint::types::Block>,
+    #[prost(message, optional, tag = "1")]
+    pub block_id: ::core::option::Option<
+        crate::tendermint::types::BlockId,
+    >,
+    #[prost(message, optional, tag = "2")]
+    pub block: ::core::option::Option<
+        crate::tendermint::types::Block,
+    >,
 }
 /// GetLatestBlockRequest is the request type for the Query/GetLatestBlock RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetLatestBlockRequest {
-}
+pub struct GetLatestBlockRequest {}
 /// GetLatestBlockResponse is the response type for the Query/GetLatestBlock RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetLatestBlockResponse {
-    #[prost(message, optional, tag="1")]
-    pub block_id: ::core::option::Option<crate::tendermint::types::BlockId>,
-    #[prost(message, optional, tag="2")]
-    pub block: ::core::option::Option<crate::tendermint::types::Block>,
+    #[prost(message, optional, tag = "1")]
+    pub block_id: ::core::option::Option<
+        crate::tendermint::types::BlockId,
+    >,
+    #[prost(message, optional, tag = "2")]
+    pub block: ::core::option::Option<
+        crate::tendermint::types::Block,
+    >,
 }
 /// GetSyncingRequest is the request type for the Query/GetSyncing RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetSyncingRequest {
-}
+pub struct GetSyncingRequest {}
 /// GetSyncingResponse is the response type for the Query/GetSyncing RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetSyncingResponse {
-    #[prost(bool, tag="1")]
+    #[prost(bool, tag = "1")]
     pub syncing: bool,
 }
 /// GetNodeInfoRequest is the request type for the Query/GetNodeInfo RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetNodeInfoRequest {
-}
+pub struct GetNodeInfoRequest {}
 /// GetNodeInfoResponse is the request type for the Query/GetNodeInfo RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetNodeInfoResponse {
-    #[prost(message, optional, tag="1")]
-    pub default_node_info: ::core::option::Option<crate::tendermint::p2p::DefaultNodeInfo>,
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "1")]
+    pub default_node_info: ::core::option::Option<
+        crate::tendermint::p2p::DefaultNodeInfo,
+    >,
+    #[prost(message, optional, tag = "2")]
     pub application_version: ::core::option::Option<VersionInfo>,
 }
 /// VersionInfo is the type for the GetNodeInfoResponse message.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VersionInfo {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub name: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
+    #[prost(string, tag = "2")]
     pub app_name: ::prost::alloc::string::String,
-    #[prost(string, tag="3")]
+    #[prost(string, tag = "3")]
     pub version: ::prost::alloc::string::String,
-    #[prost(string, tag="4")]
+    #[prost(string, tag = "4")]
     pub git_commit: ::prost::alloc::string::String,
-    #[prost(string, tag="5")]
+    #[prost(string, tag = "5")]
     pub build_tags: ::prost::alloc::string::String,
-    #[prost(string, tag="6")]
+    #[prost(string, tag = "6")]
     pub go_version: ::prost::alloc::string::String,
-    #[prost(message, repeated, tag="7")]
+    #[prost(message, repeated, tag = "7")]
     pub build_deps: ::prost::alloc::vec::Vec<Module>,
     /// Since: cosmos-sdk 0.43
-    #[prost(string, tag="8")]
+    #[prost(string, tag = "8")]
     pub cosmos_sdk_version: ::prost::alloc::string::String,
 }
 /// Module is the type for VersionInfo
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Module {
     /// module path
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub path: ::prost::alloc::string::String,
     /// module version
-    #[prost(string, tag="2")]
+    #[prost(string, tag = "2")]
     pub version: ::prost::alloc::string::String,
     /// checksum
-    #[prost(string, tag="3")]
+    #[prost(string, tag = "3")]
     pub sum: ::prost::alloc::string::String,
 }
 /// Generated client implementations.
 pub mod service_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     /// Service defines the gRPC querier service for tendermint queries.
     #[derive(Debug, Clone)]
     pub struct ServiceClient<T> {
@@ -143,7 +166,7 @@ pub mod service_client {
         /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
-            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D: TryInto<tonic::transport::Endpoint>,
             D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
@@ -159,6 +182,10 @@ pub mod service_client {
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
             Self { inner }
         }
         pub fn with_interceptor<F>(
@@ -180,26 +207,45 @@ pub mod service_client {
         {
             ServiceClient::new(InterceptedService::new(inner, interceptor))
         }
-        /// Compress requests with `gzip`.
+        /// Compress requests with the given encoding.
         ///
         /// This requires the server to support it otherwise it might respond with an
         /// error.
         #[must_use]
-        pub fn send_gzip(mut self) -> Self {
-            self.inner = self.inner.send_gzip();
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
             self
         }
-        /// Enable decompressing responses with `gzip`.
+        /// Enable decompressing responses.
         #[must_use]
-        pub fn accept_gzip(mut self) -> Self {
-            self.inner = self.inner.accept_gzip();
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
         /// GetNodeInfo queries the current node info.
         pub async fn get_node_info(
             &mut self,
             request: impl tonic::IntoRequest<super::GetNodeInfoRequest>,
-        ) -> Result<tonic::Response<super::GetNodeInfoResponse>, tonic::Status> {
+        ) -> std::result::Result<
+            tonic::Response<super::GetNodeInfoResponse>,
+            tonic::Status,
+        > {
             self.inner
                 .ready()
                 .await
@@ -213,13 +259,24 @@ pub mod service_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.base.tendermint.v1beta1.Service/GetNodeInfo",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "cosmos.base.tendermint.v1beta1.Service",
+                        "GetNodeInfo",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
         }
         /// GetSyncing queries node syncing.
         pub async fn get_syncing(
             &mut self,
             request: impl tonic::IntoRequest<super::GetSyncingRequest>,
-        ) -> Result<tonic::Response<super::GetSyncingResponse>, tonic::Status> {
+        ) -> std::result::Result<
+            tonic::Response<super::GetSyncingResponse>,
+            tonic::Status,
+        > {
             self.inner
                 .ready()
                 .await
@@ -233,13 +290,24 @@ pub mod service_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.base.tendermint.v1beta1.Service/GetSyncing",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "cosmos.base.tendermint.v1beta1.Service",
+                        "GetSyncing",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
         }
         /// GetLatestBlock returns the latest block.
         pub async fn get_latest_block(
             &mut self,
             request: impl tonic::IntoRequest<super::GetLatestBlockRequest>,
-        ) -> Result<tonic::Response<super::GetLatestBlockResponse>, tonic::Status> {
+        ) -> std::result::Result<
+            tonic::Response<super::GetLatestBlockResponse>,
+            tonic::Status,
+        > {
             self.inner
                 .ready()
                 .await
@@ -253,13 +321,24 @@ pub mod service_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.base.tendermint.v1beta1.Service/GetLatestBlock",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "cosmos.base.tendermint.v1beta1.Service",
+                        "GetLatestBlock",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
         }
         /// GetBlockByHeight queries block for given height.
         pub async fn get_block_by_height(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBlockByHeightRequest>,
-        ) -> Result<tonic::Response<super::GetBlockByHeightResponse>, tonic::Status> {
+        ) -> std::result::Result<
+            tonic::Response<super::GetBlockByHeightResponse>,
+            tonic::Status,
+        > {
             self.inner
                 .ready()
                 .await
@@ -273,13 +352,21 @@ pub mod service_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.base.tendermint.v1beta1.Service/GetBlockByHeight",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "cosmos.base.tendermint.v1beta1.Service",
+                        "GetBlockByHeight",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
         }
         /// GetLatestValidatorSet queries latest validator-set.
         pub async fn get_latest_validator_set(
             &mut self,
             request: impl tonic::IntoRequest<super::GetLatestValidatorSetRequest>,
-        ) -> Result<
+        ) -> std::result::Result<
             tonic::Response<super::GetLatestValidatorSetResponse>,
             tonic::Status,
         > {
@@ -296,13 +383,21 @@ pub mod service_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.base.tendermint.v1beta1.Service/GetLatestValidatorSet",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "cosmos.base.tendermint.v1beta1.Service",
+                        "GetLatestValidatorSet",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
         }
         /// GetValidatorSetByHeight queries validator-set at a given height.
         pub async fn get_validator_set_by_height(
             &mut self,
             request: impl tonic::IntoRequest<super::GetValidatorSetByHeightRequest>,
-        ) -> Result<
+        ) -> std::result::Result<
             tonic::Response<super::GetValidatorSetByHeightResponse>,
             tonic::Status,
         > {
@@ -319,7 +414,15 @@ pub mod service_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.base.tendermint.v1beta1.Service/GetValidatorSetByHeight",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "cosmos.base.tendermint.v1beta1.Service",
+                        "GetValidatorSetByHeight",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
         }
     }
 }
