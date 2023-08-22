@@ -14,7 +14,7 @@ use std::{
 
 use walkdir::WalkDir;
 
-use crate::{compile_protos, copy_generated_files, RegexReplace};
+use crate::{compile_protos, copy_generated_files, RegexReplace, GOOGLE_COMMON_ROOT};
 
 pub struct RootDirs {
     pub cosmos: String,
@@ -119,6 +119,7 @@ fn compile_sdk_protos_and_services(
 
     let proto_include_paths = [
         &format!("{}proto", root.display()),
+        &GOOGLE_COMMON_ROOT.to_string(),
         &format!("{}third_party/proto", root.display()),
     ]
     .map(Path::new)
@@ -174,6 +175,7 @@ fn compile_tendermint_protos_and_services(
 
     let proto_include_paths = [
         &format!("{}proto", root.display()),
+        &GOOGLE_COMMON_ROOT.to_string(),
         &format!("{}proto/tendermint", root.display()),
         &format!("{}third_party/proto", root.display()),
     ]
@@ -233,7 +235,10 @@ fn compile_ibc_protos_and_services(
 
     let proto_paths = [
         &format!("{}proto/ibc/applications/transfer", root.display()),
-        &format!("{}proto/ibc/applications/interchain_accounts", root.display()),
+        &format!(
+            "{}proto/ibc/applications/interchain_accounts",
+            root.display()
+        ),
         &format!("{}proto/ibc/core/channel", root.display()),
         &format!("{}proto/ibc/core/client", root.display()),
         &format!("{}proto/ibc/core/commitment", root.display()),
@@ -249,6 +254,7 @@ fn compile_ibc_protos_and_services(
 
     let proto_include_paths = [
         &format!("{}proto", root.display()),
+        &GOOGLE_COMMON_ROOT.to_string(),
         &format!("{}third_party/proto", root.display()),
     ]
     .map(Path::new)
@@ -284,6 +290,7 @@ fn compile_bech32ibc_protos_and_services(
 
     let proto_include_paths = [
         &format!("{}proto", root.display()),
+        &GOOGLE_COMMON_ROOT.to_string(),
         &format!("{}third_party/proto", root.display()),
         &format!("{}proto/bech32ibc", root.display()),
     ]

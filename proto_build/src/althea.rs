@@ -7,7 +7,9 @@
 // go to althea_proto/prost
 // re-write calls to super::super::cosmos as cosmos-sdk-proto::cosmos
 
-use crate::{compile_protos, RegexReplace, COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE};
+use crate::{
+    compile_protos, RegexReplace, COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE, GOOGLE_COMMON_ROOT,
+};
 use std::path::Path;
 
 /// Protos belonging to these Protobuf packages will be excluded
@@ -73,7 +75,11 @@ fn compile_althea_protos(
     ];
     // we need to have an include which is just the folder of our protos to satisfy protoc
     // which insists that any passed file be included in a directory passed as an include
-    let proto_include_paths = [althea_proto_include_dir, third_party_proto_include_dir];
+    let proto_include_paths = [
+        althea_proto_include_dir,
+        GOOGLE_COMMON_ROOT.into(),
+        third_party_proto_include_dir,
+    ];
 
     compile_protos(
         &proto_paths,

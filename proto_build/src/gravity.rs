@@ -2,7 +2,9 @@
 //! for import and use. This builder generates about a dozen files, but only one contains all the module
 //! proto info and the rest are discarded in favor of upstream cosmos-sdk-proto
 
-use crate::{compile_protos, RegexReplace, COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE};
+use crate::{
+    compile_protos, RegexReplace, COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE, GOOGLE_COMMON_ROOT,
+};
 use std::path::Path;
 
 /// Protos belonging to these Protobuf packages will be excluded
@@ -61,7 +63,11 @@ fn compile_gravity_protos(
     let proto_paths = [gravity_proto_dir];
     // we need to have an include which is just the folder of our protos to satisfy protoc
     // which insists that any passed file be included in a directory passed as an include
-    let proto_include_paths = [gravity_proto_include_dir, third_party_proto_include_dir];
+    let proto_include_paths = [
+        gravity_proto_include_dir,
+        GOOGLE_COMMON_ROOT.into(),
+        third_party_proto_include_dir,
+    ];
 
     compile_protos(
         &proto_paths,
@@ -98,6 +104,7 @@ fn compile_gravity_test_protos(
 
     let proto_include_paths = [
         &format!("{}proto", root.display()),
+        &GOOGLE_COMMON_ROOT.to_string(),
         &format!("{}third_party/proto", root.display()),
     ]
     .map(Path::new)

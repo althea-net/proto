@@ -44,6 +44,7 @@ pub const COSMOS_SDK_ROOT: &str = "../cosmos-sdk/";
 pub const BECH32IBC_ROOT: &str = "../bech32-ibc/";
 pub const TENDERMINT_ROOT: &str = "../tendermint/";
 pub const IBC_ROOT: &str = "../ibc-go/";
+pub const GOOGLE_COMMON_ROOT: &str = "../common_proto/";
 
 pub const GRAVITY_ROOT: &str = "../gravity/";
 pub const GRAVITY_TEST_ROOT: &str = "../ibc-test-chain/";
@@ -129,9 +130,7 @@ fn compile_protos(
     // Compile all proto files
     let mut config = prost_build::Config::default();
     config.out_dir(tmp_path);
-    config
-        .compile_protos(&protos, proto_include_paths)
-        .unwrap();
+    config.compile_protos(&protos, proto_include_paths).unwrap();
 
     // Compile all proto client for GRPC services
     info!("[info ] Compiling proto clients for GRPC services!");
