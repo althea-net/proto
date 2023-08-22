@@ -1,17 +1,19 @@
 /// ConfigRequest defines the request structure for the Config gRPC query.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ConfigRequest {
-}
+pub struct ConfigRequest {}
 /// ConfigResponse defines the response structure for the Config gRPC query.
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ConfigResponse {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub minimum_gas_price: ::prost::alloc::string::String,
 }
 /// Generated client implementations.
 pub mod service_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     /// Service defines the gRPC querier service for node related queries.
     #[derive(Debug, Clone)]
     pub struct ServiceClient<T> {
@@ -21,7 +23,7 @@ pub mod service_client {
         /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
-            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D: TryInto<tonic::transport::Endpoint>,
             D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
@@ -37,6 +39,10 @@ pub mod service_client {
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
             Self { inner }
         }
         pub fn with_interceptor<F>(
@@ -58,26 +64,42 @@ pub mod service_client {
         {
             ServiceClient::new(InterceptedService::new(inner, interceptor))
         }
-        /// Compress requests with `gzip`.
+        /// Compress requests with the given encoding.
         ///
         /// This requires the server to support it otherwise it might respond with an
         /// error.
         #[must_use]
-        pub fn send_gzip(mut self) -> Self {
-            self.inner = self.inner.send_gzip();
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
             self
         }
-        /// Enable decompressing responses with `gzip`.
+        /// Enable decompressing responses.
         #[must_use]
-        pub fn accept_gzip(mut self) -> Self {
-            self.inner = self.inner.accept_gzip();
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
         /// Config queries for the operator configuration.
         pub async fn config(
             &mut self,
             request: impl tonic::IntoRequest<super::ConfigRequest>,
-        ) -> Result<tonic::Response<super::ConfigResponse>, tonic::Status> {
+        ) -> std::result::Result<tonic::Response<super::ConfigResponse>, tonic::Status> {
             self.inner
                 .ready()
                 .await
@@ -91,7 +113,10 @@ pub mod service_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.base.node.v1beta1.Service/Config",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.base.node.v1beta1.Service", "Config"));
+            self.inner.unary(req, path, codec).await
         }
     }
 }

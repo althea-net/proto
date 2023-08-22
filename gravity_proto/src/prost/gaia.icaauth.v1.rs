@@ -1,187 +1,73 @@
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EventRegisterInterchainAccount {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub owner: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
+    #[prost(string, tag = "2")]
     pub connection_id: ::prost::alloc::string::String,
-    #[prost(string, tag="3")]
+    #[prost(string, tag = "3")]
     pub version: ::prost::alloc::string::String,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EventSubmitTx {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub owner: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
+    #[prost(string, tag = "2")]
     pub connection_id: ::prost::alloc::string::String,
-    #[prost(message, repeated, tag="3")]
+    #[prost(message, repeated, tag = "3")]
     pub msgs: ::prost::alloc::vec::Vec<::prost_types::Any>,
-}
-/// MsgRegisterAccount defines the payload for Msg/RegisterAccount
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgRegisterAccount {
-    #[prost(string, tag="1")]
-    pub owner: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
-    pub connection_id: ::prost::alloc::string::String,
-    #[prost(string, tag="3")]
-    pub version: ::prost::alloc::string::String,
-}
-/// MsgRegisterAccountResponse defines the response for Msg/RegisterAccount
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgRegisterAccountResponse {
-}
-/// MsgSubmitTx defines the payload for Msg/SubmitTx
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgSubmitTx {
-    #[prost(string, tag="1")]
-    pub owner: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
-    pub connection_id: ::prost::alloc::string::String,
-    /// msgs represents the transactions to be submitted to the host chain
-    #[prost(message, repeated, tag="3")]
-    pub msgs: ::prost::alloc::vec::Vec<::prost_types::Any>,
-}
-/// MsgSubmitTxResponse defines the response for Msg/SubmitTx
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgSubmitTxResponse {
-}
-/// Generated client implementations.
-pub mod msg_client {
-    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-    use tonic::codegen::*;
-    /// Msg defines the icaauth Msg service.
-    #[derive(Debug, Clone)]
-    pub struct MsgClient<T> {
-        inner: tonic::client::Grpc<T>,
-    }
-    impl MsgClient<tonic::transport::Channel> {
-        /// Attempt to create a new client by connecting to a given endpoint.
-        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-        where
-            D: std::convert::TryInto<tonic::transport::Endpoint>,
-            D::Error: Into<StdError>,
-        {
-            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
-            Ok(Self::new(conn))
-        }
-    }
-    impl<T> MsgClient<T>
-    where
-        T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::Error: Into<StdError>,
-        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
-        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
-    {
-        pub fn new(inner: T) -> Self {
-            let inner = tonic::client::Grpc::new(inner);
-            Self { inner }
-        }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> MsgClient<InterceptedService<T, F>>
-        where
-            F: tonic::service::Interceptor,
-            T::ResponseBody: Default,
-            T: tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-                Response = http::Response<
-                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
-                >,
-            >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + Send + Sync,
-        {
-            MsgClient::new(InterceptedService::new(inner, interceptor))
-        }
-        /// Compress requests with `gzip`.
-        ///
-        /// This requires the server to support it otherwise it might respond with an
-        /// error.
-        #[must_use]
-        pub fn send_gzip(mut self) -> Self {
-            self.inner = self.inner.send_gzip();
-            self
-        }
-        /// Enable decompressing responses with `gzip`.
-        #[must_use]
-        pub fn accept_gzip(mut self) -> Self {
-            self.inner = self.inner.accept_gzip();
-            self
-        }
-        /// Register defines a rpc handler for MsgRegisterAccount
-        pub async fn register_account(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgRegisterAccount>,
-        ) -> Result<tonic::Response<super::MsgRegisterAccountResponse>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/gaia.icaauth.v1.Msg/RegisterAccount",
-            );
-            self.inner.unary(request.into_request(), path, codec).await
-        }
-        /// SubmitTx defines a rpc handler for MsgSubmitTx
-        pub async fn submit_tx(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgSubmitTx>,
-        ) -> Result<tonic::Response<super::MsgSubmitTxResponse>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/gaia.icaauth.v1.Msg/SubmitTx",
-            );
-            self.inner.unary(request.into_request(), path, codec).await
-        }
-    }
 }
 /// QueryInterchainAccountFromAddressRequest is the request type for the Query/InterchainAccountAddress RPC
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryInterchainAccountFromAddressRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub owner: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
+    #[prost(string, tag = "2")]
     pub connection_id: ::prost::alloc::string::String,
 }
 /// QueryInterchainAccountFromAddressResponse the response type for the Query/InterchainAccountFromAddress RPC
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryInterchainAccountFromAddressResponse {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub interchain_account_address: ::prost::alloc::string::String,
 }
 /// QueryInterchainAccountsWithConnectionRequest is the request type for the Query/InterchainAccountsWithConnection RPC
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryInterchainAccountsWithConnectionRequest {
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub connection_id: ::prost::alloc::string::String,
 }
+
+/// RegisteredInterchainAccount contains a connection ID, port ID and associated interchain account address
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RegisteredInterchainAccount {
+    #[prost(string, tag = "1")]
+    pub connection_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub port_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub account_address: ::prost::alloc::string::String,
+}
+
 /// QueryInterchainAccountFromAddressResponse the response type for the Query/InterchainAccountsWithConnection RPC
+#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryInterchainAccountsWithConnectionResponse {
-    #[prost(message, repeated, tag="1")]
-    pub interchain_accounts: ::prost::alloc::vec::Vec<cosmos_sdk_proto::ibc::applications::interchain_accounts::v1::RegisteredInterchainAccount>,
+    #[prost(message, repeated, tag = "1")]
+    pub interchain_accounts: ::prost::alloc::vec::Vec<
+        RegisteredInterchainAccount,
+    >,
 }
 /// Generated client implementations.
 pub mod query_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     /// Query defines the gRPC querier service.
     #[derive(Debug, Clone)]
     pub struct QueryClient<T> {
@@ -191,7 +77,7 @@ pub mod query_client {
         /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
-            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D: TryInto<tonic::transport::Endpoint>,
             D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
@@ -207,6 +93,10 @@ pub mod query_client {
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
             Self { inner }
         }
         pub fn with_interceptor<F>(
@@ -228,19 +118,35 @@ pub mod query_client {
         {
             QueryClient::new(InterceptedService::new(inner, interceptor))
         }
-        /// Compress requests with `gzip`.
+        /// Compress requests with the given encoding.
         ///
         /// This requires the server to support it otherwise it might respond with an
         /// error.
         #[must_use]
-        pub fn send_gzip(mut self) -> Self {
-            self.inner = self.inner.send_gzip();
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
             self
         }
-        /// Enable decompressing responses with `gzip`.
+        /// Enable decompressing responses.
         #[must_use]
-        pub fn accept_gzip(mut self) -> Self {
-            self.inner = self.inner.accept_gzip();
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
         /// QueryInterchainAccountFromAddress returns the interchain account for given owner address on a given connection
@@ -249,7 +155,7 @@ pub mod query_client {
             request: impl tonic::IntoRequest<
                 super::QueryInterchainAccountFromAddressRequest,
             >,
-        ) -> Result<
+        ) -> std::result::Result<
             tonic::Response<super::QueryInterchainAccountFromAddressResponse>,
             tonic::Status,
         > {
@@ -266,7 +172,15 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/gaia.icaauth.v1.Query/InterchainAccountFromAddress",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "gaia.icaauth.v1.Query",
+                        "InterchainAccountFromAddress",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
         }
         /// QueryInterchainAccountsWithConnection returns all the interchain accounts on a given connection
         pub async fn interchain_accounts_with_connection(
@@ -274,7 +188,7 @@ pub mod query_client {
             request: impl tonic::IntoRequest<
                 super::QueryInterchainAccountsWithConnectionRequest,
             >,
-        ) -> Result<
+        ) -> std::result::Result<
             tonic::Response<super::QueryInterchainAccountsWithConnectionResponse>,
             tonic::Status,
         > {
@@ -291,7 +205,186 @@ pub mod query_client {
             let path = http::uri::PathAndQuery::from_static(
                 "/gaia.icaauth.v1.Query/InterchainAccountsWithConnection",
             );
-            self.inner.unary(request.into_request(), path, codec).await
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "gaia.icaauth.v1.Query",
+                        "InterchainAccountsWithConnection",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+    }
+}
+/// MsgRegisterAccount defines the payload for Msg/RegisterAccount
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgRegisterAccount {
+    #[prost(string, tag = "1")]
+    pub owner: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub connection_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub version: ::prost::alloc::string::String,
+}
+/// MsgRegisterAccountResponse defines the response for Msg/RegisterAccount
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgRegisterAccountResponse {}
+/// MsgSubmitTx defines the payload for Msg/SubmitTx
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgSubmitTx {
+    #[prost(string, tag = "1")]
+    pub owner: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub connection_id: ::prost::alloc::string::String,
+    /// msgs represents the transactions to be submitted to the host chain
+    #[prost(message, repeated, tag = "3")]
+    pub msgs: ::prost::alloc::vec::Vec<::prost_types::Any>,
+}
+/// MsgSubmitTxResponse defines the response for Msg/SubmitTx
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgSubmitTxResponse {}
+/// Generated client implementations.
+pub mod msg_client {
+    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
+    /// Msg defines the icaauth Msg service.
+    #[derive(Debug, Clone)]
+    pub struct MsgClient<T> {
+        inner: tonic::client::Grpc<T>,
+    }
+    impl MsgClient<tonic::transport::Channel> {
+        /// Attempt to create a new client by connecting to a given endpoint.
+        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
+        where
+            D: TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+    }
+    impl<T> MsgClient<T>
+    where
+        T: tonic::client::GrpcService<tonic::body::BoxBody>,
+        T::Error: Into<StdError>,
+        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
+        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+    {
+        pub fn new(inner: T) -> Self {
+            let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
+            Self { inner }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> MsgClient<InterceptedService<T, F>>
+        where
+            F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                >,
+            >,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + Send + Sync,
+        {
+            MsgClient::new(InterceptedService::new(inner, interceptor))
+        }
+        /// Compress requests with the given encoding.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
+            self
+        }
+        /// Enable decompressing responses.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
+            self
+        }
+        /// Register defines a rpc handler for MsgRegisterAccount
+        pub async fn register_account(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgRegisterAccount>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgRegisterAccountResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/gaia.icaauth.v1.Msg/RegisterAccount",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("gaia.icaauth.v1.Msg", "RegisterAccount"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// SubmitTx defines a rpc handler for MsgSubmitTx
+        pub async fn submit_tx(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgSubmitTx>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgSubmitTxResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/gaia.icaauth.v1.Msg/SubmitTx",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("gaia.icaauth.v1.Msg", "SubmitTx"));
+            self.inner.unary(req, path, codec).await
         }
     }
 }
