@@ -9,6 +9,7 @@ edition = "2018"
 prost = {workspace = true}
 tonic = {workspace = true}
 prost-build = {workspace = true}
+prost-types = {workspace = true}
 tonic-build = {workspace = true}
 log = {workspace=true}
 env_logger = {workspace=true}
