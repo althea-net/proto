@@ -25,14 +25,7 @@ pub struct RootDirs {
 
 /// Protos belonging to these Protobuf packages will be excluded
 /// (i.e. because they are sourced from `tendermint-proto` or `cosmos-sdk-proto`)
-pub const EXCLUDED_PROTO_PACKAGES: &[&str] = &[
-    "gogoproto",
-    "google",
-    "cosmos_proto",
-    // staking/v1beta1/authz.proto has a poorly-defined message called StakeAuthorization.
-    // It has been manually fixed but we must prevent recompilation to avoid manual work on every execution
-    "cosmos.staking.v1beta1",
-];
+pub const EXCLUDED_PROTO_PACKAGES: &[&str] = &["gogoproto", "google", "cosmos_proto"];
 /// Regex fixes for super::[super::, ...]cosmos and similarly for tendermint
 pub const COSMOS_SDK_PROTO_REGEX: &str = "(super::)+cosmos";
 pub const COSMOS_SDK_PROTO_REPLACE: &str = "crate::cosmos";

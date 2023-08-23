@@ -182,6 +182,7 @@ pub mod cosmos {
     /// Proof-of-Stake layer for public blockchains.
     pub mod staking {
         pub mod v1beta1 {
+            // WARNING: This file is problematic due to a namespace conflict, see the README for more info
             include!("prost/cosmos.staking.v1beta1.rs");
         }
     }
