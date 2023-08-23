@@ -36,3 +36,10 @@ This crate is supported on Rust **1.56** or newer.
 [//]: # "general links"
 [Protobufs]: (https://github.com/cosmos/cosmos-sdk/tree/master/proto/)
 [Cosmos SDK]: https://github.com/cosmos/cosmos-sdk
+
+## Issues with the Cosmos Staking module prost file
+
+Unfortunately (the upstream source for the CosmosSDK staking module proto definitions)[https://github.com/cosmos/cosmos-sdk/blob/v0.45.16/proto/cosmos/staking/v1beta1/authz.proto#L20-L30] causes a namespace conflict when using prost.
+Particularly there is a `oneof` named `validators` which becomes a Rust `enum` named `Validators` and a `message` named `Validators` which becomes a Rust `struct` named `Validators`, which causes a failure to compile.
+
+Whenever this file is updated it has been manually fixed to rename the `enum` to `ValidatorsEnum` and the relative disuse of the StakingAuthorization types means that is OK for now. If you run proto_build and see the `src/prost/cosmos.staking.v1beta1.rs` file has changed in insignificant ways, it is fine to ignore that file.
