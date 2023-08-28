@@ -1,5 +1,6 @@
 [workspace]
 members = ["althea_proto", "cosmos_sdk_proto", "gravity_proto", "proto_build"]
+resolver = "2"
 
 [workspace.dependencies]
 prost = "0.11"
