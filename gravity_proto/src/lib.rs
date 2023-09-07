@@ -9,7 +9,9 @@ pub mod gravity {
     include!("prost/gravity.v1.rs");
     include!("ethereum_claim.rs");
 }
-
+pub mod auction {
+    include!("prost/auction.v1.rs");
+}
 /// note to future readers I have hand copied the RegisteredInterchainAccount file from ibc.applications.interchain_accounts.v1.rs which is compiled
 /// but not checked in into gaia.icaauth.v1.rs
 pub mod gravity_test {
