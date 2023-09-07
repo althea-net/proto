@@ -53,14 +53,17 @@ fn compile_gravity_protos(
 
     let root = root_path.to_path_buf();
 
-    let mut gravity_proto_dir = root.clone();
-    gravity_proto_dir.push("module/proto/gravity/v1");
+    let gravity_proto_paths = [
+        &format!("{}module/proto/gravity/v1", root.display()),
+        &format!("{}module/proto/auction/v1", root.display()),
+    ]
+    .map(Path::new)
+    .map(Path::to_path_buf);
     let mut gravity_proto_include_dir = root.clone();
     gravity_proto_include_dir.push("module/proto");
     let mut third_party_proto_include_dir = root;
     third_party_proto_include_dir.push("module/third_party/proto");
 
-    let proto_paths = [gravity_proto_dir];
     // we need to have an include which is just the folder of our protos to satisfy protoc
     // which insists that any passed file be included in a directory passed as an include
     let proto_include_paths = [
@@ -70,7 +73,7 @@ fn compile_gravity_protos(
     ];
 
     compile_protos(
-        &proto_paths,
+        &gravity_proto_paths,
         &proto_include_paths,
         regex_replacements,
         EXCLUDED_PROTO_PACKAGES,
