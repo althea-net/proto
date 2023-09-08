@@ -13,7 +13,7 @@ pub struct StakeAuthorization {
     pub authorization_type: i32,
     /// validators is the oneof that represents either allow_list or deny_list
     #[prost(oneof = "stake_authorization::ValidatorsEnum", tags = "2, 3")]
-    pub validators: ::core::option::Option<stake_authorization::ValidatorsEnum>,
+    pub validators: Option<stake_authorization::ValidatorsEnum>
 }
 /// Nested message and enum types in `StakeAuthorization`.
 pub mod stake_authorization {
@@ -24,7 +24,7 @@ pub mod stake_authorization {
         #[prost(string, repeated, tag = "1")]
         pub address: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     }
-    /// validators_enum is the oneof that represents either allow_list or deny_list
+    /// validators is the oneof that represents either allow_list or deny_list
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum ValidatorsEnum {
