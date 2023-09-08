@@ -1,9 +1,9 @@
 /// MsgBid is a message type for placing a bid on an auction with given `auction_id`
 /// `bidder` is the signer of the Msg
-/// `amount` will be locked by the auction module if the bid is accepted as the highest bid
-/// Note: see Params, as there is an implicit fee set in `bid_fee_basis_points`.
-/// If `bid_fee_basis_points` is set to x, then the implicit fee would be `amount` * (x / 10000)
-/// Additionally, all bids must meet or exceed `min_bid_amount` and be paid using the `bid_token`
+/// `amount` is the native token amount locked by the auction module if the bid is accepted as the highest bid
+/// `bid_fee` is the native token amount sent to the community pool, and should be at least equal to the min bid fee param
+///
+/// Additionally, all bids must meet or exceed `min_bid_amount`
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgBid {
@@ -16,6 +16,9 @@ pub struct MsgBid {
     /// Amount of the bid
     #[prost(uint64, tag = "3")]
     pub amount: u64,
+    /// Fee amount
+    #[prost(uint64, tag = "4")]
+    pub bid_fee: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -137,25 +140,16 @@ pub struct Params {
     /// MinBidAmount is the minimum bid amount to consider
     #[prost(uint64, tag = "2")]
     pub min_bid_amount: u64,
-    /// BidFeeBasisPoints defines the fee that auction bidders must pay in addition to their bid for consideration by the module
-    /// in hundredths of a percent.
-    /// This fee is paid out to the community pool.
-    /// This fee is separate from the standard Cosmos Tx spam protection fee
-    ///
-    /// For example if this value is set to x, then bidders would be required to pay (x / 10000) * bid amount as a fee
+    /// MinBidFee defines the required minimum fee that must be paid by bidders for their bid to be considered by the module.
+    /// This fee is paid out to the community pool. This fee is separate from the standard Cosmos Tx spam protection fee.
+    /// This fee will not be charged unless a bid is successful.
     #[prost(uint64, tag = "3")]
-    pub bid_fee_basis_points: u64,
-    /// BidToken defines the denom of the token to use for bidding and paying bid fees
-    #[prost(string, tag = "4")]
-    pub bid_token: ::prost::alloc::string::String,
-    /// AuctionRate is the percentage of the community pool token balance to be included in auctions
-    #[prost(bytes = "vec", tag = "5")]
-    pub auction_rate: ::prost::alloc::vec::Vec<u8>,
+    pub min_bid_fee: u64,
     /// NonAuctionableTokens is a list of token denomss which should never be auctioned from the community pool
-    #[prost(string, repeated, tag = "6")]
+    #[prost(string, repeated, tag = "5")]
     pub non_auctionable_tokens: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// BurnWinningBids controls if we burn the tokens of the winning bidder instead of sending them to the community pool
-    #[prost(bool, tag = "7")]
+    #[prost(bool, tag = "6")]
     pub burn_winning_bids: bool,
 }
 /// AuctionPeriod represents a period of auctions.
