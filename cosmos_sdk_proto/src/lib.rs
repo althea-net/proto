@@ -122,10 +122,14 @@ pub mod cosmos {
             include!("prost/cosmos.crypto.secp256k1.rs");
         }
         pub mod hd {
-            include!("prost/cosmos.crypto.hd.v1.rs");
+            pub mod v1 {
+                include!("prost/cosmos.crypto.hd.v1.rs");
+            }
         }
         pub mod keyring {
-            include!("prost/cosmos.crypto.keyring.v1.rs");
+            pub mod v1 {
+                include!("prost/cosmos.crypto.keyring.v1.rs");
+            }
         }
     }
 
