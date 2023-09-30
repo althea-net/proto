@@ -1,3 +1,24 @@
+/// UpdateHrpIBCRecordProposal is a gov Content type for adding a new record
+/// between a bech32 prefix and an IBC (port, channel).
+/// It can be used to add a new record to the set. It can also be.
+/// used to update the IBC channel to associate with a specific denom. If channel
+/// is set to "", it will remove the record from the set.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateHrpIbcChannelProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub hrp: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub source_channel: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "5")]
+    pub ics_to_height_offset: u64,
+    #[prost(message, optional, tag = "6")]
+    pub ics_to_time_offset: ::core::option::Option<::prost_types::Duration>,
+}
 /// An HrpIbcRecord maps a bech32 human-readable prefix to an IBC source
 /// channel
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -13,14 +34,6 @@ pub struct HrpIbcRecord {
     pub ics_to_height_offset: u64,
     #[prost(message, optional, tag = "4")]
     pub ics_to_time_offset: ::core::option::Option<::prost_types::Duration>,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GenesisState {
-    #[prost(string, tag = "1")]
-    pub native_hrp: ::prost::alloc::string::String,
-    #[prost(message, repeated, tag = "2")]
-    pub hrp_ibc_records: ::prost::alloc::vec::Vec<HrpIbcRecord>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -223,24 +236,11 @@ pub mod query_client {
         }
     }
 }
-/// UpdateHrpIBCRecordProposal is a gov Content type for adding a new record
-/// between a bech32 prefix and an IBC (port, channel).
-/// It can be used to add a new record to the set. It can also be.
-/// used to update the IBC channel to associate with a specific denom. If channel
-/// is set to "", it will remove the record from the set.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateHrpIbcChannelProposal {
+pub struct GenesisState {
     #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub hrp: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub source_channel: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "5")]
-    pub ics_to_height_offset: u64,
-    #[prost(message, optional, tag = "6")]
-    pub ics_to_time_offset: ::core::option::Option<::prost_types::Duration>,
+    pub native_hrp: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "2")]
+    pub hrp_ibc_records: ::prost::alloc::vec::Vec<HrpIbcRecord>,
 }

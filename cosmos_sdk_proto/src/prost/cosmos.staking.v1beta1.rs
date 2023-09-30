@@ -1,81 +1,3 @@
-/// StakeAuthorization defines authorization for delegate/undelegate/redelegate.
-///
-/// Since: cosmos-sdk 0.43
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct StakeAuthorization {
-    /// max_tokens specifies the maximum amount of tokens can be delegate to a validator. If it is
-    /// empty, there is no spend limit and any amount of coins can be delegated.
-    #[prost(message, optional, tag = "1")]
-    pub max_tokens: ::core::option::Option<super::super::base::v1beta1::Coin>,
-    /// authorization_type defines one of AuthorizationType.
-    #[prost(enumeration = "AuthorizationType", tag = "4")]
-    pub authorization_type: i32,
-    /// validators is the oneof that represents either allow_list or deny_list
-    #[prost(oneof = "stake_authorization::ValidatorsEnum", tags = "2, 3")]
-    pub validators: Option<stake_authorization::ValidatorsEnum>
-}
-/// Nested message and enum types in `StakeAuthorization`.
-pub mod stake_authorization {
-    /// Validators defines list of validator addresses.
-    #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, PartialEq, ::prost::Message)]
-    pub struct Validators {
-        #[prost(string, repeated, tag = "1")]
-        pub address: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    }
-    /// validators is the oneof that represents either allow_list or deny_list
-    #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum ValidatorsEnum {
-        /// allow_list specifies list of validator addresses to whom grantee can delegate tokens on behalf of granter's
-        /// account.
-        #[prost(message, tag = "2")]
-        AllowList(Validators),
-        /// deny_list specifies list of validator addresses to whom grantee can not delegate tokens.
-        #[prost(message, tag = "3")]
-        DenyList(Validators),
-    }
-}
-/// AuthorizationType defines the type of staking module authorization type
-///
-/// Since: cosmos-sdk 0.43
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
-pub enum AuthorizationType {
-    /// AUTHORIZATION_TYPE_UNSPECIFIED specifies an unknown authorization type
-    Unspecified = 0,
-    /// AUTHORIZATION_TYPE_DELEGATE defines an authorization type for Msg/Delegate
-    Delegate = 1,
-    /// AUTHORIZATION_TYPE_UNDELEGATE defines an authorization type for Msg/Undelegate
-    Undelegate = 2,
-    /// AUTHORIZATION_TYPE_REDELEGATE defines an authorization type for Msg/BeginRedelegate
-    Redelegate = 3,
-}
-impl AuthorizationType {
-    /// String value of the enum field names used in the ProtoBuf definition.
-    ///
-    /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
-    pub fn as_str_name(&self) -> &'static str {
-        match self {
-            AuthorizationType::Unspecified => "AUTHORIZATION_TYPE_UNSPECIFIED",
-            AuthorizationType::Delegate => "AUTHORIZATION_TYPE_DELEGATE",
-            AuthorizationType::Undelegate => "AUTHORIZATION_TYPE_UNDELEGATE",
-            AuthorizationType::Redelegate => "AUTHORIZATION_TYPE_REDELEGATE",
-        }
-    }
-    /// Creates an enum from field names used in the ProtoBuf definition.
-    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
-        match value {
-            "AUTHORIZATION_TYPE_UNSPECIFIED" => Some(Self::Unspecified),
-            "AUTHORIZATION_TYPE_DELEGATE" => Some(Self::Delegate),
-            "AUTHORIZATION_TYPE_UNDELEGATE" => Some(Self::Undelegate),
-            "AUTHORIZATION_TYPE_REDELEGATE" => Some(Self::Redelegate),
-            _ => None,
-        }
-    }
-}
 /// HistoricalInfo contains header and validator information for a given block.
 /// It is stored as part of staking module's state, which persists the `n` most
 /// recent HistoricalInfo
@@ -176,6 +98,8 @@ pub struct Validator {
     #[prost(message, optional, tag = "10")]
     pub commission: ::core::option::Option<Commission>,
     /// min_self_delegation is the validator's self declared minimum self delegation.
+    ///
+    /// Since: cosmos-sdk 0.46
     #[prost(string, tag = "11")]
     pub min_self_delegation: ::prost::alloc::string::String,
 }
@@ -331,6 +255,9 @@ pub struct Params {
     /// bond_denom defines the bondable coin denomination.
     #[prost(string, tag = "5")]
     pub bond_denom: ::prost::alloc::string::String,
+    /// min_commission_rate is the chain-wide minimum commission rate that a validator can charge their delegators
+    #[prost(string, tag = "6")]
+    pub min_commission_rate: ::prost::alloc::string::String,
 }
 /// DelegationResponse is equivalent to Delegation except that it contains a
 /// balance in addition to shares which is more suitable for client responses.
@@ -411,46 +338,387 @@ impl BondStatus {
         }
     }
 }
-/// GenesisState defines the staking module's genesis state.
+/// MsgCreateValidator defines a SDK message for creating a new validator.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GenesisState {
-    /// params defines all the paramaters of related to deposit.
+pub struct MsgCreateValidator {
     #[prost(message, optional, tag = "1")]
-    pub params: ::core::option::Option<Params>,
-    /// last_total_power tracks the total amounts of bonded tokens recorded during
-    /// the previous end block.
-    #[prost(bytes = "vec", tag = "2")]
-    pub last_total_power: ::prost::alloc::vec::Vec<u8>,
-    /// last_validator_powers is a special index that provides a historical list
-    /// of the last-block's bonded validators.
-    #[prost(message, repeated, tag = "3")]
-    pub last_validator_powers: ::prost::alloc::vec::Vec<LastValidatorPower>,
-    /// delegations defines the validator set at genesis.
-    #[prost(message, repeated, tag = "4")]
-    pub validators: ::prost::alloc::vec::Vec<Validator>,
-    /// delegations defines the delegations active at genesis.
-    #[prost(message, repeated, tag = "5")]
-    pub delegations: ::prost::alloc::vec::Vec<Delegation>,
-    /// unbonding_delegations defines the unbonding delegations active at genesis.
-    #[prost(message, repeated, tag = "6")]
-    pub unbonding_delegations: ::prost::alloc::vec::Vec<UnbondingDelegation>,
-    /// redelegations defines the redelegations active at genesis.
-    #[prost(message, repeated, tag = "7")]
-    pub redelegations: ::prost::alloc::vec::Vec<Redelegation>,
-    #[prost(bool, tag = "8")]
-    pub exported: bool,
+    pub description: ::core::option::Option<Description>,
+    #[prost(message, optional, tag = "2")]
+    pub commission: ::core::option::Option<CommissionRates>,
+    #[prost(string, tag = "3")]
+    pub min_self_delegation: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub delegator_address: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
+    pub validator_address: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "6")]
+    pub pubkey: ::core::option::Option<::prost_types::Any>,
+    #[prost(message, optional, tag = "7")]
+    pub value: ::core::option::Option<super::super::base::v1beta1::Coin>,
 }
-/// LastValidatorPower required for validator set update logic.
+/// MsgCreateValidatorResponse defines the Msg/CreateValidator response type.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct LastValidatorPower {
-    /// address is the address of the validator.
+pub struct MsgCreateValidatorResponse {}
+/// MsgEditValidator defines a SDK message for editing an existing validator.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgEditValidator {
+    #[prost(message, optional, tag = "1")]
+    pub description: ::core::option::Option<Description>,
+    #[prost(string, tag = "2")]
+    pub validator_address: ::prost::alloc::string::String,
+    /// We pass a reference to the new commission rate and min self delegation as
+    /// it's not mandatory to update. If not updated, the deserialized rate will be
+    /// zero with no way to distinguish if an update was intended.
+    /// REF: #2373
+    #[prost(string, tag = "3")]
+    pub commission_rate: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub min_self_delegation: ::prost::alloc::string::String,
+}
+/// MsgEditValidatorResponse defines the Msg/EditValidator response type.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgEditValidatorResponse {}
+/// MsgDelegate defines a SDK message for performing a delegation of coins
+/// from a delegator to a validator.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgDelegate {
     #[prost(string, tag = "1")]
-    pub address: ::prost::alloc::string::String,
-    /// power defines the power of the validator.
-    #[prost(int64, tag = "2")]
-    pub power: i64,
+    pub delegator_address: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub validator_address: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub amount: ::core::option::Option<super::super::base::v1beta1::Coin>,
+}
+/// MsgDelegateResponse defines the Msg/Delegate response type.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgDelegateResponse {}
+/// MsgBeginRedelegate defines a SDK message for performing a redelegation
+/// of coins from a delegator and source validator to a destination validator.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgBeginRedelegate {
+    #[prost(string, tag = "1")]
+    pub delegator_address: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub validator_src_address: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub validator_dst_address: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "4")]
+    pub amount: ::core::option::Option<super::super::base::v1beta1::Coin>,
+}
+/// MsgBeginRedelegateResponse defines the Msg/BeginRedelegate response type.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgBeginRedelegateResponse {
+    #[prost(message, optional, tag = "1")]
+    pub completion_time: ::core::option::Option<::prost_types::Timestamp>,
+}
+/// MsgUndelegate defines a SDK message for performing an undelegation from a
+/// delegate and a validator.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUndelegate {
+    #[prost(string, tag = "1")]
+    pub delegator_address: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub validator_address: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub amount: ::core::option::Option<super::super::base::v1beta1::Coin>,
+}
+/// MsgUndelegateResponse defines the Msg/Undelegate response type.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUndelegateResponse {
+    #[prost(message, optional, tag = "1")]
+    pub completion_time: ::core::option::Option<::prost_types::Timestamp>,
+}
+/// MsgCancelUnbondingDelegation defines the SDK message for performing a cancel unbonding delegation for delegator
+///
+/// Since: cosmos-sdk 0.46
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgCancelUnbondingDelegation {
+    #[prost(string, tag = "1")]
+    pub delegator_address: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub validator_address: ::prost::alloc::string::String,
+    /// amount is always less than or equal to unbonding delegation entry balance
+    #[prost(message, optional, tag = "3")]
+    pub amount: ::core::option::Option<super::super::base::v1beta1::Coin>,
+    /// creation_height is the height which the unbonding took place.
+    #[prost(int64, tag = "4")]
+    pub creation_height: i64,
+}
+/// MsgCancelUnbondingDelegationResponse
+///
+/// Since: cosmos-sdk 0.46
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgCancelUnbondingDelegationResponse {}
+/// Generated client implementations.
+pub mod msg_client {
+    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
+    /// Msg defines the staking Msg service.
+    #[derive(Debug, Clone)]
+    pub struct MsgClient<T> {
+        inner: tonic::client::Grpc<T>,
+    }
+    impl MsgClient<tonic::transport::Channel> {
+        /// Attempt to create a new client by connecting to a given endpoint.
+        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
+        where
+            D: TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+    }
+    impl<T> MsgClient<T>
+    where
+        T: tonic::client::GrpcService<tonic::body::BoxBody>,
+        T::Error: Into<StdError>,
+        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
+        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+    {
+        pub fn new(inner: T) -> Self {
+            let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
+            Self { inner }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> MsgClient<InterceptedService<T, F>>
+        where
+            F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                >,
+            >,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + Send + Sync,
+        {
+            MsgClient::new(InterceptedService::new(inner, interceptor))
+        }
+        /// Compress requests with the given encoding.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
+            self
+        }
+        /// Enable decompressing responses.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
+            self
+        }
+        /// CreateValidator defines a method for creating a new validator.
+        pub async fn create_validator(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgCreateValidator>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgCreateValidatorResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.staking.v1beta1.Msg/CreateValidator",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("cosmos.staking.v1beta1.Msg", "CreateValidator"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        /// EditValidator defines a method for editing an existing validator.
+        pub async fn edit_validator(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgEditValidator>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgEditValidatorResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.staking.v1beta1.Msg/EditValidator",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "EditValidator"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// Delegate defines a method for performing a delegation of coins
+        /// from a delegator to a validator.
+        pub async fn delegate(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgDelegate>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgDelegateResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.staking.v1beta1.Msg/Delegate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "Delegate"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// BeginRedelegate defines a method for performing a redelegation
+        /// of coins from a delegator and source validator to a destination validator.
+        pub async fn begin_redelegate(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgBeginRedelegate>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgBeginRedelegateResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.staking.v1beta1.Msg/BeginRedelegate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("cosmos.staking.v1beta1.Msg", "BeginRedelegate"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        /// Undelegate defines a method for performing an undelegation from a
+        /// delegate and a validator.
+        pub async fn undelegate(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgUndelegate>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgUndelegateResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.staking.v1beta1.Msg/Undelegate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "Undelegate"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// CancelUnbondingDelegation defines a method for performing canceling the unbonding delegation
+        /// and delegate back to previous validator.
+        ///
+        /// Since: cosmos-sdk 0.46
+        pub async fn cancel_unbonding_delegation(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgCancelUnbondingDelegation>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgCancelUnbondingDelegationResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.staking.v1beta1.Msg/CancelUnbondingDelegation",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "cosmos.staking.v1beta1.Msg",
+                        "CancelUnbondingDelegation",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+    }
 }
 /// QueryValidatorsRequest is request type for Query/Validators RPC method.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -490,7 +758,7 @@ pub struct QueryValidatorRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryValidatorResponse {
-    /// validator defines the the validator info.
+    /// validator defines the validator info.
     #[prost(message, optional, tag = "1")]
     pub validator: ::core::option::Option<Validator>,
 }
@@ -695,7 +963,7 @@ pub struct QueryDelegatorValidatorsRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryDelegatorValidatorsResponse {
-    /// validators defines the the validators' info of a delegator.
+    /// validators defines the validators' info of a delegator.
     #[prost(message, repeated, tag = "1")]
     pub validators: ::prost::alloc::vec::Vec<Validator>,
     /// pagination defines the pagination in the response.
@@ -721,7 +989,7 @@ pub struct QueryDelegatorValidatorRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryDelegatorValidatorResponse {
-    /// validator defines the the validator info.
+    /// validator defines the validator info.
     #[prost(message, optional, tag = "1")]
     pub validator: ::core::option::Option<Validator>,
 }
@@ -1263,328 +1531,122 @@ pub mod query_client {
         }
     }
 }
-/// MsgCreateValidator defines a SDK message for creating a new validator.
+/// StakeAuthorization defines authorization for delegate/undelegate/redelegate.
+///
+/// Since: cosmos-sdk 0.43
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgCreateValidator {
+pub struct StakeAuthorization {
+    /// max_tokens specifies the maximum amount of tokens can be delegate to a validator. If it is
+    /// empty, there is no spend limit and any amount of coins can be delegated.
     #[prost(message, optional, tag = "1")]
-    pub description: ::core::option::Option<Description>,
-    #[prost(message, optional, tag = "2")]
-    pub commission: ::core::option::Option<CommissionRates>,
-    #[prost(string, tag = "3")]
-    pub min_self_delegation: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub delegator_address: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
-    pub validator_address: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "6")]
-    pub pubkey: ::core::option::Option<::prost_types::Any>,
-    #[prost(message, optional, tag = "7")]
-    pub value: ::core::option::Option<super::super::base::v1beta1::Coin>,
+    pub max_tokens: ::core::option::Option<super::super::base::v1beta1::Coin>,
+    /// authorization_type defines one of AuthorizationType.
+    #[prost(enumeration = "AuthorizationType", tag = "4")]
+    pub authorization_type: i32,
+    /// validators is the oneof that represents either allow_list or deny_list
+    #[prost(oneof = "stake_authorization::ValidatorsEnum", tags = "2, 3")]
+    pub validators: ::core::option::Option<stake_authorization::Validators>,
 }
-/// MsgCreateValidatorResponse defines the Msg/CreateValidator response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgCreateValidatorResponse {}
-/// MsgEditValidator defines a SDK message for editing an existing validator.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgEditValidator {
-    #[prost(message, optional, tag = "1")]
-    pub description: ::core::option::Option<Description>,
-    #[prost(string, tag = "2")]
-    pub validator_address: ::prost::alloc::string::String,
-    /// We pass a reference to the new commission rate and min self delegation as
-    /// it's not mandatory to update. If not updated, the deserialized rate will be
-    /// zero with no way to distinguish if an update was intended.
-    /// REF: #2373
-    #[prost(string, tag = "3")]
-    pub commission_rate: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub min_self_delegation: ::prost::alloc::string::String,
-}
-/// MsgEditValidatorResponse defines the Msg/EditValidator response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgEditValidatorResponse {}
-/// MsgDelegate defines a SDK message for performing a delegation of coins
-/// from a delegator to a validator.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgDelegate {
-    #[prost(string, tag = "1")]
-    pub delegator_address: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub validator_address: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub amount: ::core::option::Option<super::super::base::v1beta1::Coin>,
-}
-/// MsgDelegateResponse defines the Msg/Delegate response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgDelegateResponse {}
-/// MsgBeginRedelegate defines a SDK message for performing a redelegation
-/// of coins from a delegator and source validator to a destination validator.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgBeginRedelegate {
-    #[prost(string, tag = "1")]
-    pub delegator_address: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub validator_src_address: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub validator_dst_address: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "4")]
-    pub amount: ::core::option::Option<super::super::base::v1beta1::Coin>,
-}
-/// MsgBeginRedelegateResponse defines the Msg/BeginRedelegate response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgBeginRedelegateResponse {
-    #[prost(message, optional, tag = "1")]
-    pub completion_time: ::core::option::Option<::prost_types::Timestamp>,
-}
-/// MsgUndelegate defines a SDK message for performing an undelegation from a
-/// delegate and a validator.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUndelegate {
-    #[prost(string, tag = "1")]
-    pub delegator_address: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub validator_address: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub amount: ::core::option::Option<super::super::base::v1beta1::Coin>,
-}
-/// MsgUndelegateResponse defines the Msg/Undelegate response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUndelegateResponse {
-    #[prost(message, optional, tag = "1")]
-    pub completion_time: ::core::option::Option<::prost_types::Timestamp>,
-}
-/// Generated client implementations.
-pub mod msg_client {
-    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-    use tonic::codegen::*;
-    use tonic::codegen::http::Uri;
-    /// Msg defines the staking Msg service.
-    #[derive(Debug, Clone)]
-    pub struct MsgClient<T> {
-        inner: tonic::client::Grpc<T>,
+/// Nested message and enum types in `StakeAuthorization`.
+pub mod stake_authorization {
+    /// Validators defines list of validator addresses.
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct Validators {
+        #[prost(string, repeated, tag = "1")]
+        pub address: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     }
-    impl MsgClient<tonic::transport::Channel> {
-        /// Attempt to create a new client by connecting to a given endpoint.
-        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-        where
-            D: TryInto<tonic::transport::Endpoint>,
-            D::Error: Into<StdError>,
-        {
-            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
-            Ok(Self::new(conn))
+    /// validators is the oneof that represents either allow_list or deny_list
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum ValidatorsEnum {
+        /// allow_list specifies list of validator addresses to whom grantee can delegate tokens on behalf of granter's
+        /// account.
+        #[prost(message, tag = "2")]
+        AllowList(Validators),
+        /// deny_list specifies list of validator addresses to whom grantee can not delegate tokens.
+        #[prost(message, tag = "3")]
+        DenyList(Validators),
+    }
+}
+/// AuthorizationType defines the type of staking module authorization type
+///
+/// Since: cosmos-sdk 0.43
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum AuthorizationType {
+    /// AUTHORIZATION_TYPE_UNSPECIFIED specifies an unknown authorization type
+    Unspecified = 0,
+    /// AUTHORIZATION_TYPE_DELEGATE defines an authorization type for Msg/Delegate
+    Delegate = 1,
+    /// AUTHORIZATION_TYPE_UNDELEGATE defines an authorization type for Msg/Undelegate
+    Undelegate = 2,
+    /// AUTHORIZATION_TYPE_REDELEGATE defines an authorization type for Msg/BeginRedelegate
+    Redelegate = 3,
+}
+impl AuthorizationType {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            AuthorizationType::Unspecified => "AUTHORIZATION_TYPE_UNSPECIFIED",
+            AuthorizationType::Delegate => "AUTHORIZATION_TYPE_DELEGATE",
+            AuthorizationType::Undelegate => "AUTHORIZATION_TYPE_UNDELEGATE",
+            AuthorizationType::Redelegate => "AUTHORIZATION_TYPE_REDELEGATE",
         }
     }
-    impl<T> MsgClient<T>
-    where
-        T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::Error: Into<StdError>,
-        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
-        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
-    {
-        pub fn new(inner: T) -> Self {
-            let inner = tonic::client::Grpc::new(inner);
-            Self { inner }
-        }
-        pub fn with_origin(inner: T, origin: Uri) -> Self {
-            let inner = tonic::client::Grpc::with_origin(inner, origin);
-            Self { inner }
-        }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> MsgClient<InterceptedService<T, F>>
-        where
-            F: tonic::service::Interceptor,
-            T::ResponseBody: Default,
-            T: tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-                Response = http::Response<
-                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
-                >,
-            >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + Send + Sync,
-        {
-            MsgClient::new(InterceptedService::new(inner, interceptor))
-        }
-        /// Compress requests with the given encoding.
-        ///
-        /// This requires the server to support it otherwise it might respond with an
-        /// error.
-        #[must_use]
-        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
-            self.inner = self.inner.send_compressed(encoding);
-            self
-        }
-        /// Enable decompressing responses.
-        #[must_use]
-        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
-            self.inner = self.inner.accept_compressed(encoding);
-            self
-        }
-        /// Limits the maximum size of a decoded message.
-        ///
-        /// Default: `4MB`
-        #[must_use]
-        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
-            self.inner = self.inner.max_decoding_message_size(limit);
-            self
-        }
-        /// Limits the maximum size of an encoded message.
-        ///
-        /// Default: `usize::MAX`
-        #[must_use]
-        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
-            self.inner = self.inner.max_encoding_message_size(limit);
-            self
-        }
-        /// CreateValidator defines a method for creating a new validator.
-        pub async fn create_validator(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgCreateValidator>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgCreateValidatorResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Msg/CreateValidator",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("cosmos.staking.v1beta1.Msg", "CreateValidator"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        /// EditValidator defines a method for editing an existing validator.
-        pub async fn edit_validator(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgEditValidator>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgEditValidatorResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Msg/EditValidator",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "EditValidator"));
-            self.inner.unary(req, path, codec).await
-        }
-        /// Delegate defines a method for performing a delegation of coins
-        /// from a delegator to a validator.
-        pub async fn delegate(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgDelegate>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgDelegateResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Msg/Delegate",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "Delegate"));
-            self.inner.unary(req, path, codec).await
-        }
-        /// BeginRedelegate defines a method for performing a redelegation
-        /// of coins from a delegator and source validator to a destination validator.
-        pub async fn begin_redelegate(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgBeginRedelegate>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgBeginRedelegateResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Msg/BeginRedelegate",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("cosmos.staking.v1beta1.Msg", "BeginRedelegate"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        /// Undelegate defines a method for performing an undelegation from a
-        /// delegate and a validator.
-        pub async fn undelegate(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgUndelegate>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgUndelegateResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Msg/Undelegate",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "Undelegate"));
-            self.inner.unary(req, path, codec).await
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "AUTHORIZATION_TYPE_UNSPECIFIED" => Some(Self::Unspecified),
+            "AUTHORIZATION_TYPE_DELEGATE" => Some(Self::Delegate),
+            "AUTHORIZATION_TYPE_UNDELEGATE" => Some(Self::Undelegate),
+            "AUTHORIZATION_TYPE_REDELEGATE" => Some(Self::Redelegate),
+            _ => None,
         }
     }
+}
+/// GenesisState defines the staking module's genesis state.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GenesisState {
+    /// params defines all the paramaters of related to deposit.
+    #[prost(message, optional, tag = "1")]
+    pub params: ::core::option::Option<Params>,
+    /// last_total_power tracks the total amounts of bonded tokens recorded during
+    /// the previous end block.
+    #[prost(bytes = "vec", tag = "2")]
+    pub last_total_power: ::prost::alloc::vec::Vec<u8>,
+    /// last_validator_powers is a special index that provides a historical list
+    /// of the last-block's bonded validators.
+    #[prost(message, repeated, tag = "3")]
+    pub last_validator_powers: ::prost::alloc::vec::Vec<LastValidatorPower>,
+    /// delegations defines the validator set at genesis.
+    #[prost(message, repeated, tag = "4")]
+    pub validators: ::prost::alloc::vec::Vec<Validator>,
+    /// delegations defines the delegations active at genesis.
+    #[prost(message, repeated, tag = "5")]
+    pub delegations: ::prost::alloc::vec::Vec<Delegation>,
+    /// unbonding_delegations defines the unbonding delegations active at genesis.
+    #[prost(message, repeated, tag = "6")]
+    pub unbonding_delegations: ::prost::alloc::vec::Vec<UnbondingDelegation>,
+    /// redelegations defines the redelegations active at genesis.
+    #[prost(message, repeated, tag = "7")]
+    pub redelegations: ::prost::alloc::vec::Vec<Redelegation>,
+    #[prost(bool, tag = "8")]
+    pub exported: bool,
+}
+/// LastValidatorPower required for validator set update logic.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct LastValidatorPower {
+    /// address is the address of the validator.
+    #[prost(string, tag = "1")]
+    pub address: ::prost::alloc::string::String,
+    /// power defines the power of the validator.
+    #[prost(int64, tag = "2")]
+    pub power: i64,
 }

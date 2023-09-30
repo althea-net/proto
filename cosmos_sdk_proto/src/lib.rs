@@ -121,6 +121,12 @@ pub mod cosmos {
         pub mod secp256k1 {
             include!("prost/cosmos.crypto.secp256k1.rs");
         }
+        pub mod hd {
+            include!("prost/cosmos.crypto.hd.v1.rs");
+        }
+        pub mod keyring {
+            include!("prost/cosmos.crypto.keyring.v1.rs");
+        }
     }
 
     /// Messages and services handling token distribution
@@ -156,12 +162,22 @@ pub mod cosmos {
         pub mod v1beta1 {
             include!("prost/cosmos.gov.v1beta1.rs");
         }
+        pub mod v1 {
+            include!("prost/cosmos.gov.v1.rs");
+        }
     }
 
     /// Messages and services handling minting
     pub mod mint {
         pub mod v1beta1 {
             include!("prost/cosmos.mint.v1beta1.rs");
+        }
+    }
+
+    // Messages and services handling NFTs
+    pub mod nft {
+        pub mod v1beta1 {
+            include!("prost/cosmos.nft.v1beta1.rs");
         }
     }
 

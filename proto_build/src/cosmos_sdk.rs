@@ -100,6 +100,7 @@ fn compile_sdk_protos_and_services(
         &format!("{}proto/cosmos/genutil", root.display()),
         &format!("{}proto/cosmos/gov", root.display()),
         &format!("{}proto/cosmos/mint", root.display()),
+        &format!("{}proto/cosmos/nft", root.display()),
         &format!("{}proto/cosmos/params", root.display()),
         &format!("{}proto/cosmos/slashing", root.display()),
         &format!("{}proto/cosmos/staking", root.display()),
