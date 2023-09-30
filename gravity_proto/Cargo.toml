@@ -1,6 +1,6 @@
 [package]
 name = "gravity_proto"
-version = "0.4.0"
+version = "0.5.0"
 description = "Protobuf stuct defintions for interacting with Gravity Bridge Chain"
 authors = ["Justin Kilpatrick <justin@althea.net>", "Christian Borst <christian@althea.systems>"]
 edition = "2021"
@@ -15,6 +15,6 @@ keywords = ["blockchain", "cosmos", "tendermint", "proto"]
 [dependencies]
 prost = {workspace = true}
 prost-types = {workspace = true}
-cosmos-sdk-proto = {package="cosmos-sdk-proto-althea", version="0.16.0", path = "../cosmos_sdk_proto", features = ["ethermint", "bech32ibc"]}
+cosmos-sdk-proto = {package="cosmos-sdk-proto-althea", version="0.17.0", path = "../cosmos_sdk_proto"}
 tonic = {workspace = true}
 
