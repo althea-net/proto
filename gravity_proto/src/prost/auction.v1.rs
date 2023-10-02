@@ -137,20 +137,21 @@ pub struct Params {
     /// AuctionLength is the number of blocks that the AuctionPeriod will be active
     #[prost(uint64, tag = "1")]
     pub auction_length: u64,
-    /// MinBidAmount is the minimum bid amount to consider
-    #[prost(uint64, tag = "2")]
-    pub min_bid_amount: u64,
     /// MinBidFee defines the required minimum fee that must be paid by bidders for their bid to be considered by the module.
     /// This fee is paid out to the community pool. This fee is separate from the standard Cosmos Tx spam protection fee.
     /// This fee will not be charged unless a bid is successful.
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag = "2")]
     pub min_bid_fee: u64,
     /// NonAuctionableTokens is a list of token denomss which should never be auctioned from the community pool
-    #[prost(string, repeated, tag = "5")]
+    #[prost(string, repeated, tag = "3")]
     pub non_auctionable_tokens: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// BurnWinningBids controls if we burn the tokens of the winning bidder instead of sending them to the community pool
-    #[prost(bool, tag = "6")]
+    #[prost(bool, tag = "4")]
     pub burn_winning_bids: bool,
+    /// Enabled controls whether auctions progress as usual, or are preserved in an inactive halted state.
+    /// When Enabled is false, bids will also fail to be processed.
+    #[prost(bool, tag = "5")]
+    pub enabled: bool,
 }
 /// AuctionPeriod represents a period of auctions.
 /// An AuctionPeriod applies to as many auctionable tokens exist in the community pool
