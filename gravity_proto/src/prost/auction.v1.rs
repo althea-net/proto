@@ -1,7 +1,88 @@
+/// AuctionPeriod represents a period of auctions.
+/// An AuctionPeriod applies to as many auctionable tokens exist in the auction pool
+/// Note: see params for a list of non-auctionable tokens
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AuctionPeriod {
+    /// Block height at which the AuctionPeriod starts.
+    #[prost(uint64, tag = "1")]
+    pub start_block_height: u64,
+    /// Block height at which the AuctionPeriod end.
+    #[prost(uint64, tag = "2")]
+    pub end_block_height: u64,
+}
+/// Auction represents a single auction.
+/// An Auction has a unique identifier relative to its Auction Period Id , an amount being auctioned, a status, and a highest bid.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Auction {
+    /// Unique identifier for the Auction.
+    #[prost(uint64, tag = "1")]
+    pub id: u64,
+    /// Amount being auctioned.
+    #[prost(message, optional, tag = "2")]
+    pub amount: ::core::option::Option<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
+    /// Highest bid on the Auction.
+    #[prost(message, optional, tag = "3")]
+    pub highest_bid: ::core::option::Option<Bid>,
+}
+/// Bid represents a bid on an Auction.
+/// A Bid includes the identifier of the Auction, the amount of the bid, and the address of the bidder.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Bid {
+    /// Amount of the bid.
+    #[prost(uint64, tag = "1")]
+    pub bid_amount: u64,
+    /// Address of the bidder.
+    #[prost(string, tag = "2")]
+    pub bidder_address: ::prost::alloc::string::String,
+}
+/// AuctionId enables easy storage and retrieval of the most recently used AuctionId
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AuctionId {
+    #[prost(uint64, tag = "1")]
+    pub id: u64,
+}
+/// Params defines the parameters for the GravityBridge auction module.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Params {
+    /// AuctionLength is the number of blocks that the AuctionPeriod will be active
+    #[prost(uint64, tag = "1")]
+    pub auction_length: u64,
+    /// MinBidFee defines the required minimum fee that must be paid by bidders for their bid to be considered by the module.
+    /// This fee is paid out to the auction pool. This fee is separate from the standard Cosmos Tx spam protection fee.
+    /// This fee will not be charged unless a bid is successful.
+    #[prost(uint64, tag = "2")]
+    pub min_bid_fee: u64,
+    /// NonAuctionableTokens is a list of token denomss which should never be auctioned from the auction pool
+    #[prost(string, repeated, tag = "3")]
+    pub non_auctionable_tokens: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// BurnWinningBids controls if we burn the tokens of the winning bidder instead of sending them to the auction pool
+    #[prost(bool, tag = "4")]
+    pub burn_winning_bids: bool,
+    /// Enabled controls whether auctions progress as usual, or are preserved in an inactive halted state.
+    /// When Enabled is false, bids will also fail to be processed.
+    #[prost(bool, tag = "5")]
+    pub enabled: bool,
+}
+/// GenesisState defines the auction module's genesis state.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GenesisState {
+    #[prost(message, optional, tag = "1")]
+    pub params: ::core::option::Option<Params>,
+    #[prost(message, optional, tag = "2")]
+    pub active_period: ::core::option::Option<AuctionPeriod>,
+    #[prost(message, repeated, tag = "3")]
+    pub active_auctions: ::prost::alloc::vec::Vec<Auction>,
+}
 /// MsgBid is a message type for placing a bid on an auction with given `auction_id`
 /// `bidder` is the signer of the Msg
 /// `amount` is the native token amount locked by the auction module if the bid is accepted as the highest bid
-/// `bid_fee` is the native token amount sent to the community pool, and should be at least equal to the min bid fee param
+/// `bid_fee` is the native token amount sent to the auction pool, and should be at least equal to the min bid fee param
 ///
 /// Additionally, all bids must meet or exceed `min_bid_amount`
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -130,76 +211,6 @@ pub mod msg_client {
         }
     }
 }
-/// Params defines the parameters for the GravityBridge auction module.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Params {
-    /// AuctionLength is the number of blocks that the AuctionPeriod will be active
-    #[prost(uint64, tag = "1")]
-    pub auction_length: u64,
-    /// MinBidFee defines the required minimum fee that must be paid by bidders for their bid to be considered by the module.
-    /// This fee is paid out to the community pool. This fee is separate from the standard Cosmos Tx spam protection fee.
-    /// This fee will not be charged unless a bid is successful.
-    #[prost(uint64, tag = "2")]
-    pub min_bid_fee: u64,
-    /// NonAuctionableTokens is a list of token denomss which should never be auctioned from the community pool
-    #[prost(string, repeated, tag = "3")]
-    pub non_auctionable_tokens: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    /// BurnWinningBids controls if we burn the tokens of the winning bidder instead of sending them to the community pool
-    #[prost(bool, tag = "4")]
-    pub burn_winning_bids: bool,
-    /// Enabled controls whether auctions progress as usual, or are preserved in an inactive halted state.
-    /// When Enabled is false, bids will also fail to be processed.
-    #[prost(bool, tag = "5")]
-    pub enabled: bool,
-}
-/// AuctionPeriod represents a period of auctions.
-/// An AuctionPeriod applies to as many auctionable tokens exist in the community pool
-/// Note: see params for a list of non-auctionable tokens
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AuctionPeriod {
-    /// Block height at which the AuctionPeriod starts.
-    #[prost(uint64, tag = "1")]
-    pub start_block_height: u64,
-    /// Block height at which the AuctionPeriod end.
-    #[prost(uint64, tag = "2")]
-    pub end_block_height: u64,
-}
-/// Auction represents a single auction.
-/// An Auction has a unique identifier relative to its Auction Period Id , an amount being auctioned, a status, and a highest bid.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Auction {
-    /// Unique identifier for the Auction.
-    #[prost(uint64, tag = "1")]
-    pub id: u64,
-    /// Amount being auctioned.
-    #[prost(message, optional, tag = "2")]
-    pub amount: ::core::option::Option<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
-    /// Highest bid on the Auction.
-    #[prost(message, optional, tag = "3")]
-    pub highest_bid: ::core::option::Option<Bid>,
-}
-/// Bid represents a bid on an Auction.
-/// A Bid includes the identifier of the Auction, the amount of the bid, and the address of the bidder.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Bid {
-    /// Amount of the bid.
-    #[prost(uint64, tag = "1")]
-    pub bid_amount: u64,
-    /// Address of the bidder.
-    #[prost(string, tag = "2")]
-    pub bidder_address: ::prost::alloc::string::String,
-}
-/// AuctionId enables easy storage and retrieval of the most recently used AuctionId
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AuctionId {
-    #[prost(uint64, tag = "1")]
-    pub id: u64,
-}
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
@@ -262,6 +273,17 @@ pub struct QueryAllAuctionsByBidderRequest {
 pub struct QueryAllAuctionsByBidderResponse {
     #[prost(message, repeated, tag = "1")]
     pub auctions: ::prost::alloc::vec::Vec<Auction>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAuctionPoolRequest {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAuctionPoolResponse {
+    #[prost(string, tag = "1")]
+    pub account: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "2")]
+    pub balances: ::prost::alloc::vec::Vec<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
 }
 /// Generated client implementations.
 pub mod query_client {
@@ -501,16 +523,32 @@ pub mod query_client {
                 .insert(GrpcMethod::new("auction.v1.Query", "AllAuctionsByBidder"));
             self.inner.unary(req, path, codec).await
         }
+        /// AuctionPool returns the auction pool account address and the tokens which will be up for auction next,
+        /// (but does not return any amounts from auctions with no bidder)
+        pub async fn auction_pool(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryAuctionPoolRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryAuctionPoolResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/auction.v1.Query/AuctionPool",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("auction.v1.Query", "AuctionPool"));
+            self.inner.unary(req, path, codec).await
+        }
     }
-}
-/// GenesisState defines the auction module's genesis state.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GenesisState {
-    #[prost(message, optional, tag = "1")]
-    pub params: ::core::option::Option<Params>,
-    #[prost(message, optional, tag = "2")]
-    pub active_period: ::core::option::Option<AuctionPeriod>,
-    #[prost(message, repeated, tag = "3")]
-    pub active_auctions: ::prost::alloc::vec::Vec<Auction>,
 }
