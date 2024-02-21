@@ -28,7 +28,7 @@ dependencies = [
 
 [[package]]
 name = "althea_proto"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "cosmos-sdk-proto-althea",
  "prost",
@@ -311,7 +311,7 @@ checksum = "6fb8d784f27acf97159b40fc4db5ecd8aa23b9ad5ef69cdd136d3bc80665f0c0"
 
 [[package]]
 name = "gravity_proto"
-version = "0.4.2"
+version = "0.4.3"
 dependencies = [
  "cosmos-sdk-proto-althea",
  "prost",
