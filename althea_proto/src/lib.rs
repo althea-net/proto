@@ -84,3 +84,20 @@ pub mod ethermint {
         }
     }
 }
+
+/// note to future readers I have hand copied the RegisteredInterchainAccount file from ibc.applications.interchain_accounts.v1.rs which is compiled
+/// but not checked in into gaia.icaauth.v1.rs
+pub mod althea_test {
+    pub mod gaia {
+        pub mod globalfee {
+            pub mod v1beta1 {
+                include!("prost/gaia.globalfee.v1beta1.rs");
+            }
+        }
+        pub mod icaauth {
+            pub mod v1 {
+                include!("prost/gaia.icaauth.v1.rs");
+            }
+        }
+    }
+}
