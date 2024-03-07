@@ -7,12 +7,12 @@
 pub use cosmos_sdk_proto;
 pub mod lockup {
     pub mod v1 {
-        include!("prost/lockup.v1.rs");
+        include!("prost/althea.lockup.v1.rs");
     }
 }
 pub mod microtx {
     pub mod v1 {
-        include!("prost/microtx.v1.rs");
+        include!("prost/althea.microtx.v1.rs");
     }
 }
 

@@ -42,7 +42,9 @@ pub struct EventMicrotx {
     #[prost(string, tag = "2")]
     pub receiver: ::prost::alloc::string::String,
     #[prost(message, repeated, tag = "3")]
-    pub amounts: ::prost::alloc::vec::Vec<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
+    pub amounts: ::prost::alloc::vec::Vec<
+        cosmos_sdk_proto::cosmos::base::v1beta1::Coin,
+    >,
     #[prost(message, repeated, tag = "4")]
     pub fee: ::prost::alloc::vec::Vec<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
 }
@@ -203,9 +205,12 @@ pub mod msg_client {
                     )
                 })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/microtx.v1.Msg/Microtx");
+            let path = http::uri::PathAndQuery::from_static(
+                "/althea.microtx.v1.Msg/Microtx",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new("microtx.v1.Msg", "Microtx"));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("althea.microtx.v1.Msg", "Microtx"));
             self.inner.unary(req, path, codec).await
         }
         /// The Liquify service converts an account into a piece of Liquid Infrastructure
@@ -226,9 +231,12 @@ pub mod msg_client {
                     )
                 })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/microtx.v1.Msg/Liquify");
+            let path = http::uri::PathAndQuery::from_static(
+                "/althea.microtx.v1.Msg/Liquify",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new("microtx.v1.Msg", "Liquify"));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("althea.microtx.v1.Msg", "Liquify"));
             self.inner.unary(req, path, codec).await
         }
     }
@@ -390,9 +398,12 @@ pub mod query_client {
                     )
                 })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/microtx.v1.Query/Params");
+            let path = http::uri::PathAndQuery::from_static(
+                "/althea.microtx.v1.Query/Params",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new("microtx.v1.Query", "Params"));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("althea.microtx.v1.Query", "Params"));
             self.inner.unary(req, path, codec).await
         }
         /// Get an authoritative fee amount which must be paid on Microtx
@@ -414,11 +425,11 @@ pub mod query_client {
                 })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/microtx.v1.Query/MicrotxFee",
+                "/althea.microtx.v1.Query/MicrotxFee",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("microtx.v1.Query", "MicrotxFee"));
+                .insert(GrpcMethod::new("althea.microtx.v1.Query", "MicrotxFee"));
             self.inner.unary(req, path, codec).await
         }
         /// Get all of the Liquid Infrastructure accounts known to the module
@@ -440,11 +451,11 @@ pub mod query_client {
                 })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/microtx.v1.Query/LiquidAccounts",
+                "/althea.microtx.v1.Query/LiquidAccounts",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("microtx.v1.Query", "LiquidAccounts"));
+                .insert(GrpcMethod::new("althea.microtx.v1.Query", "LiquidAccounts"));
             self.inner.unary(req, path, codec).await
         }
         /// Get info about one particular Liquid Infrastructure account by owner, bech32 address, or nft address
@@ -471,11 +482,11 @@ pub mod query_client {
                 })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/microtx.v1.Query/LiquidAccount",
+                "/althea.microtx.v1.Query/LiquidAccount",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("microtx.v1.Query", "LiquidAccount"));
+                .insert(GrpcMethod::new("althea.microtx.v1.Query", "LiquidAccount"));
             self.inner.unary(req, path, codec).await
         }
     }
