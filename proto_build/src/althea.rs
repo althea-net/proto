@@ -83,14 +83,14 @@ fn compile_althea_protos(
         third_party_proto_include_dir,
     ];
 
-    compile_protos(
-        &proto_paths,
-        &proto_include_paths,
-        regex_replacements,
-        EXCLUDED_PROTO_PACKAGES,
+    compile_protos(crate::CompileArgs {
+        proto_paths: &proto_paths,
+        proto_include_paths: &proto_include_paths,
+        replacements: regex_replacements,
+        exclusions: EXCLUDED_PROTO_PACKAGES,
         tmp_path,
         out_path,
-        true,
-        true,
-    );
+        clean_tmp: true,
+        clean_out: true,
+    });
 }

@@ -96,15 +96,27 @@ fn main() {
     gravity_test(GRAVITY_TEST_ROOT, TMP_PATH, GRAVITY_OUT_PATH);
 }
 
-fn compile_protos(
-    proto_paths: &[PathBuf],
-    proto_include_paths: &[PathBuf],
-    replacements: &[RegexReplace],
-    exclusions: &[&str],
-    tmp_path: &Path,
-    out_path: &Path,
+struct CompileArgs<'a> {
+    proto_paths: &'a [PathBuf],
+    proto_include_paths: &'a [PathBuf],
+    replacements: &'a [RegexReplace],
+    exclusions: &'a [&'a str],
+    tmp_path: &'a Path,
+    out_path: &'a Path,
     clean_tmp: bool,
     clean_out: bool,
+}
+fn compile_protos(
+    CompileArgs {
+        proto_paths,
+        proto_include_paths,
+        replacements,
+        exclusions,
+        tmp_path,
+        out_path,
+        clean_tmp,
+        clean_out,
+    }: CompileArgs,
 ) {
     // List available proto files
     let mut protos: Vec<PathBuf> = vec![];

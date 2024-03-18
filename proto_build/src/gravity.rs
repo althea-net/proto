@@ -53,7 +53,7 @@ fn compile_gravity_protos(
 
     let root = root_path.to_path_buf();
 
-    let gravity_proto_paths = [
+    let proto_paths = [
         &format!("{}module/proto/gravity/v1", root.display()),
         &format!("{}module/proto/auction/v1", root.display()),
     ]
@@ -72,16 +72,16 @@ fn compile_gravity_protos(
         third_party_proto_include_dir,
     ];
 
-    compile_protos(
-        &gravity_proto_paths,
-        &proto_include_paths,
-        regex_replacements,
-        EXCLUDED_PROTO_PACKAGES,
+    compile_protos(crate::CompileArgs {
+        proto_paths: &proto_paths,
+        proto_include_paths: &proto_include_paths,
+        replacements: regex_replacements,
+        exclusions: EXCLUDED_PROTO_PACKAGES,
         tmp_path,
         out_path,
-        true,
-        true,
-    );
+        clean_tmp: true,
+        clean_out: true,
+    });
 }
 
 // Compiles the ibc-test-chain protos for Gravity testing use
@@ -113,14 +113,14 @@ fn compile_gravity_test_protos(
     .map(Path::new)
     .map(Path::to_path_buf);
 
-    compile_protos(
-        &proto_paths,
-        &proto_include_paths,
-        regex_replacements,
-        EXCLUDED_PROTO_PACKAGES,
+    compile_protos(crate::CompileArgs {
+        proto_paths: &proto_paths,
+        proto_include_paths: &proto_include_paths,
+        replacements: regex_replacements,
+        exclusions: EXCLUDED_PROTO_PACKAGES,
         tmp_path,
         out_path,
-        false,
-        false,
-    );
+        clean_tmp: false,
+        clean_out: false,
+    });
 }

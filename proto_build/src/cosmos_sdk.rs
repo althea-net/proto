@@ -118,16 +118,16 @@ fn compile_sdk_protos_and_services(
     .map(Path::new)
     .map(Path::to_path_buf);
 
-    compile_protos(
-        &proto_paths,
-        &proto_include_paths,
-        regex_replacements,
-        EXCLUDED_PROTO_PACKAGES,
+    compile_protos(crate::CompileArgs {
+        proto_paths: &proto_paths,
+        proto_include_paths: &proto_include_paths,
+        replacements: regex_replacements,
+        exclusions: EXCLUDED_PROTO_PACKAGES,
         tmp_path,
         out_path,
-        false,
-        false,
-    );
+        clean_tmp: false,
+        clean_out: false,
+    });
 
     info!("=> Done!");
 }
@@ -253,16 +253,16 @@ fn compile_ibc_protos_and_services(
     .map(Path::new)
     .map(Path::to_path_buf);
 
-    compile_protos(
-        &proto_paths,
-        &proto_include_paths,
-        regex_replacements,
-        EXCLUDED_PROTO_PACKAGES,
+    compile_protos(crate::CompileArgs {
+        proto_paths: &proto_paths,
+        proto_include_paths: &proto_include_paths,
+        replacements: regex_replacements,
+        exclusions: EXCLUDED_PROTO_PACKAGES,
         tmp_path,
         out_path,
-        true,
-        false,
-    );
+        clean_tmp: true,
+        clean_out: false,
+    });
 }
 
 fn compile_bech32ibc_protos_and_services(
@@ -290,14 +290,14 @@ fn compile_bech32ibc_protos_and_services(
     .map(Path::new)
     .map(Path::to_path_buf);
 
-    compile_protos(
-        &proto_paths,
-        &proto_include_paths,
-        regex_replacements,
-        EXCLUDED_PROTO_PACKAGES,
+    compile_protos(crate::CompileArgs {
+        proto_paths: &proto_paths,
+        proto_include_paths: &proto_include_paths,
+        replacements: regex_replacements,
+        exclusions: EXCLUDED_PROTO_PACKAGES,
         tmp_path,
         out_path,
-        true,
-        false,
-    );
+        clean_tmp: true,
+        clean_out: false,
+    });
 }
