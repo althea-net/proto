@@ -68,12 +68,18 @@ impl RegexReplace {
         }
     }
 }
+// Specifies a replacement of "super::super::...::cosmos" with "cosmos_sdk_proto::cosmos"
 pub const COSMOS_SDK_PROTO_IMPORT_REGEX: &str = "(super::)+cosmos";
 pub const COSMOS_SDK_PROTO_CRATE_REPLACE: &str = "cosmos_sdk_proto::cosmos";
 pub const COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE: RegexReplace = RegexReplace::new(
     COSMOS_SDK_PROTO_IMPORT_REGEX,
     COSMOS_SDK_PROTO_CRATE_REPLACE,
 );
+// Specifies a replacement of "super::super::...::ibc" with "cosmos_sdk_proto::ibc"
+pub const IBC_PROTO_IMPORT_REGEX: &str = "(super::)+ibc";
+pub const IBC_PROTO_CRATE_REPLACE: &str = "cosmos_sdk_proto::ibc";
+pub const IBC_PROTO_REGEX_REPLACE: RegexReplace =
+    RegexReplace::new(IBC_PROTO_IMPORT_REGEX, IBC_PROTO_CRATE_REPLACE);
 
 fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();

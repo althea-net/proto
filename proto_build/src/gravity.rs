@@ -4,6 +4,7 @@
 
 use crate::{
     compile_protos, RegexReplace, COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE, GOOGLE_COMMON_ROOT,
+    IBC_PROTO_REGEX_REPLACE,
 };
 use std::path::Path;
 
@@ -31,7 +32,10 @@ pub fn gravity_main(root: &str, tmp: &str, out: &str) {
 /// Compiles the test protos for the gravity-bridge project
 pub fn gravity_test(root: &str, tmp: &str, out: &str) {
     // Regex fixes for super::[super::, ...]cosmos
-    let regex_replacements: Vec<RegexReplace> = vec![COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE];
+    let regex_replacements: Vec<RegexReplace> = vec![
+        COSMOS_SDK_PROTO_CRATE_REGEX_REPLACE,
+        IBC_PROTO_REGEX_REPLACE,
+    ];
 
     let root_path = Path::new(root);
     let tmp_path = Path::new(tmp);
