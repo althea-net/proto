@@ -52,6 +52,8 @@ fn compile_althea_protos(
     lockup_proto_dir.push("proto/althea/lockup/v1/");
     let mut microtx_proto_dir = root.clone();
     microtx_proto_dir.push("proto/althea/microtx/v1/");
+    let mut onboarding_proto_dir = root.clone();
+    onboarding_proto_dir.push("proto/althea/onboarding/v1/");
 
     // Protobuf requires the root of the above modules + any third party deps to be included
     let mut althea_proto_include_dir = root.clone();
