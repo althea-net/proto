@@ -1276,6 +1276,47 @@ pub mod msg_client {
         }
     }
 }
+/// IDSet represents a set of IDs
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct IdSet {
+    #[prost(uint64, repeated, tag = "1")]
+    pub ids: ::prost::alloc::vec::Vec<u64>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct BatchFees {
+    #[prost(string, tag = "1")]
+    pub token: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub total_fees: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "3")]
+    pub tx_count: u64,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EventWithdrawalReceived {
+    #[prost(string, tag = "1")]
+    pub bridge_contract: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub bridge_chain_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub outgoing_tx_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub nonce: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EventWithdrawCanceled {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub tx_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub bridge_contract: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub bridge_chain_id: ::prost::alloc::string::String,
+}
 /// The slashing fractions for the various gravity related slashing conditions. The first three
 /// refer to not submitting a particular message, the third for submitting a different claim
 /// for the same Ethereum event
@@ -1311,6 +1352,11 @@ pub mod msg_client {
 /// min_chain_fee_basis_points
 ///
 /// The minimum SendToEth `chain_fee` amount, in terms of basis points. e.g. 10% fee = 1000, and 0.02% fee = 2
+///
+/// chain_fee_auction_pool_fraction
+///
+/// Specifies what fraction of the SendToEth `chain_fee` amount should go to the auction pool.
+/// e.g. "0.5" gives a 50% auction pool / staker split while "0.9" would cause 90% of the fee to go to the pool
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
@@ -1354,6 +1400,8 @@ pub struct Params {
     pub ethereum_blacklist: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(uint64, tag = "20")]
     pub min_chain_fee_basis_points: u64,
+    #[prost(string, tag = "21")]
+    pub chain_fee_auction_pool_fraction: ::prost::alloc::string::String,
 }
 /// GenesisState struct, containing all persistant data required by the Gravity module
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -1415,47 +1463,6 @@ pub struct GravityNonces {
     /// during chain upgrades
     #[prost(uint64, tag = "7")]
     pub last_batch_id: u64,
-}
-/// IDSet represents a set of IDs
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct IdSet {
-    #[prost(uint64, repeated, tag = "1")]
-    pub ids: ::prost::alloc::vec::Vec<u64>,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct BatchFees {
-    #[prost(string, tag = "1")]
-    pub token: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub total_fees: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "3")]
-    pub tx_count: u64,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventWithdrawalReceived {
-    #[prost(string, tag = "1")]
-    pub bridge_contract: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub bridge_chain_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub outgoing_tx_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub nonce: ::prost::alloc::string::String,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventWithdrawCanceled {
-    #[prost(string, tag = "1")]
-    pub sender: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub tx_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub bridge_contract: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub bridge_chain_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
