@@ -45,7 +45,15 @@ pub struct EventMicrotx {
     pub amounts: ::prost::alloc::vec::Vec<
         cosmos_sdk_proto::cosmos::base::v1beta1::Coin,
     >,
-    #[prost(message, repeated, tag = "4")]
+}
+/// A type for the block's event log, Microtx fees may be collected out-of-band and so
+/// this event may be emitted in an AnteHandler or during the Msg handler
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EventMicrotxFeeCollected {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "2")]
     pub fee: ::prost::alloc::vec::Vec<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
 }
 /// A type for the block's event log recording when a Liquid Infrastructure account

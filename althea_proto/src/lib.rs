@@ -5,14 +5,26 @@
 //! if it does make for a somewhat more confusing proto generation process.
 
 pub use cosmos_sdk_proto;
-pub mod lockup {
-    pub mod v1 {
-        include!("prost/althea.lockup.v1.rs");
+pub mod althea {
+    pub mod lockup {
+        pub mod v1 {
+            include!("prost/althea.lockup.v1.rs");
+        }
     }
-}
-pub mod microtx {
-    pub mod v1 {
-        include!("prost/althea.microtx.v1.rs");
+    pub mod microtx {
+        pub mod v1 {
+            include!("prost/althea.microtx.v1.rs");
+        }
+    }
+    pub mod gasfree {
+        pub mod v1 {
+            include!("prost/althea.gasfree.v1.rs");
+        }
+    }
+    pub mod onboarding {
+        pub mod v1 {
+            include!("prost/althea.onboarding.v1.rs");
+        }
     }
 }
 

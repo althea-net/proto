@@ -52,8 +52,8 @@ pub struct MsgSubmitTxResponse {}
 /// Generated client implementations.
 pub mod msg_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-    use tonic::codegen::http::Uri;
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     /// Msg defines the icaauth Msg service.
     #[derive(Debug, Clone)]
     pub struct MsgClient<T> {
@@ -85,7 +85,10 @@ pub mod msg_client {
             let inner = tonic::client::Grpc::with_origin(inner, origin);
             Self { inner }
         }
-        pub fn with_interceptor<F>(inner: T, interceptor: F) -> MsgClient<InterceptedService<T, F>>
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> MsgClient<InterceptedService<T, F>>
         where
             F: tonic::service::Interceptor,
             T::ResponseBody: Default,
@@ -95,8 +98,9 @@ pub mod msg_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
-                Into<StdError> + Send + Sync,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + Send + Sync,
         {
             MsgClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -135,16 +139,23 @@ pub mod msg_client {
         pub async fn register_account(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgRegisterAccount>,
-        ) -> std::result::Result<tonic::Response<super::MsgRegisterAccountResponse>, tonic::Status>
-        {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
+        ) -> std::result::Result<
+            tonic::Response<super::MsgRegisterAccountResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/gaia.icaauth.v1.Msg/RegisterAccount");
+            let path = http::uri::PathAndQuery::from_static(
+                "/gaia.icaauth.v1.Msg/RegisterAccount",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("gaia.icaauth.v1.Msg", "RegisterAccount"));
@@ -154,16 +165,23 @@ pub mod msg_client {
         pub async fn submit_tx(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgSubmitTx>,
-        ) -> std::result::Result<tonic::Response<super::MsgSubmitTxResponse>, tonic::Status>
-        {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
+        ) -> std::result::Result<
+            tonic::Response<super::MsgSubmitTxResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/gaia.icaauth.v1.Msg/SubmitTx");
+            let path = http::uri::PathAndQuery::from_static(
+                "/gaia.icaauth.v1.Msg/SubmitTx",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("gaia.icaauth.v1.Msg", "SubmitTx"));
@@ -194,31 +212,20 @@ pub struct QueryInterchainAccountsWithConnectionRequest {
     #[prost(string, tag = "1")]
     pub connection_id: ::prost::alloc::string::String,
 }
-
-/// RegisteredInterchainAccount contains a connection ID, port ID and associated interchain account address
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RegisteredInterchainAccount {
-    #[prost(string, tag = "1")]
-    pub connection_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub account_address: ::prost::alloc::string::String,
-}
-
 /// QueryInterchainAccountFromAddressResponse the response type for the Query/InterchainAccountsWithConnection RPC
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryInterchainAccountsWithConnectionResponse {
     #[prost(message, repeated, tag = "1")]
-    pub interchain_accounts: ::prost::alloc::vec::Vec<RegisteredInterchainAccount>,
+    pub interchain_accounts: ::prost::alloc::vec::Vec<
+        cosmos_sdk_proto::ibc::applications::interchain_accounts::v1::RegisteredInterchainAccount,
+    >,
 }
 /// Generated client implementations.
 pub mod query_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-    use tonic::codegen::http::Uri;
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     /// Query defines the gRPC querier service.
     #[derive(Debug, Clone)]
     pub struct QueryClient<T> {
@@ -263,8 +270,9 @@ pub mod query_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
-                Into<StdError> + Send + Sync,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + Send + Sync,
         {
             QueryClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -302,51 +310,67 @@ pub mod query_client {
         /// QueryInterchainAccountFromAddress returns the interchain account for given owner address on a given connection
         pub async fn interchain_account_from_address(
             &mut self,
-            request: impl tonic::IntoRequest<super::QueryInterchainAccountFromAddressRequest>,
+            request: impl tonic::IntoRequest<
+                super::QueryInterchainAccountFromAddressRequest,
+            >,
         ) -> std::result::Result<
             tonic::Response<super::QueryInterchainAccountFromAddressResponse>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/gaia.icaauth.v1.Query/InterchainAccountFromAddress",
             );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "gaia.icaauth.v1.Query",
-                "InterchainAccountFromAddress",
-            ));
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "gaia.icaauth.v1.Query",
+                        "InterchainAccountFromAddress",
+                    ),
+                );
             self.inner.unary(req, path, codec).await
         }
         /// QueryInterchainAccountsWithConnection returns all the interchain accounts on a given connection
         pub async fn interchain_accounts_with_connection(
             &mut self,
-            request: impl tonic::IntoRequest<super::QueryInterchainAccountsWithConnectionRequest>,
+            request: impl tonic::IntoRequest<
+                super::QueryInterchainAccountsWithConnectionRequest,
+            >,
         ) -> std::result::Result<
             tonic::Response<super::QueryInterchainAccountsWithConnectionResponse>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/gaia.icaauth.v1.Query/InterchainAccountsWithConnection",
             );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "gaia.icaauth.v1.Query",
-                "InterchainAccountsWithConnection",
-            ));
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "gaia.icaauth.v1.Query",
+                        "InterchainAccountsWithConnection",
+                    ),
+                );
             self.inner.unary(req, path, codec).await
         }
     }
