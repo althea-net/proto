@@ -52,6 +52,8 @@ fn compile_althea_protos(
     lockup_proto_dir.push("proto/althea/lockup/v1/");
     let mut microtx_proto_dir = root.clone();
     microtx_proto_dir.push("proto/althea/microtx/v1/");
+    let mut gasfree_proto_dir = root.clone();
+    gasfree_proto_dir.push("proto/althea/gasfree/v1/");
     let mut onboarding_proto_dir = root.clone();
     onboarding_proto_dir.push("proto/althea/onboarding/v1/");
 
@@ -72,6 +74,8 @@ fn compile_althea_protos(
     let proto_paths = [
         lockup_proto_dir,
         microtx_proto_dir,
+        gasfree_proto_dir,
+        onboarding_proto_dir,
         ethermint_proto_dir,
         canto_proto_dir,
     ];
