@@ -60,6 +60,8 @@ fn compile_althea_protos(
     gasfree_proto_dir.push("proto/althea/gasfree/v1/");
     let mut onboarding_proto_dir = root.clone();
     onboarding_proto_dir.push("proto/althea/onboarding/v1/");
+    let mut nativedex_proto_dir = root.clone();
+    nativedex_proto_dir.push("proto/althea/nativedex/v1/");
 
     // Protobuf requires the root of the above modules + any third party deps to be included
     let mut althea_proto_include_dir = root.clone();
@@ -80,6 +82,7 @@ fn compile_althea_protos(
         microtx_proto_dir,
         gasfree_proto_dir,
         onboarding_proto_dir,
+        nativedex_proto_dir,
         ethermint_proto_dir,
         canto_proto_dir,
     ];

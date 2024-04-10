@@ -26,6 +26,11 @@ pub mod althea {
             include!("prost/althea.onboarding.v1.rs");
         }
     }
+    pub mod nativedex {
+        pub mod v1 {
+            include!("prost/althea.nativedex.v1.rs");
+        }
+    }
 }
 
 // THIRD PARTY PROTOS MANAGED IN THIS REPO
