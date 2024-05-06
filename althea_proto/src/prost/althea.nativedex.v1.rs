@@ -145,7 +145,7 @@ pub struct HotPathOpenMetadata {
 /// SetSafeModeProposal will lock down the DEX for emergency changes. This can also be used by the emergency multisig to halt the DEX more quickly.
 /// When the DEX is in safe mode only a UpgradeProxy, CollectTreasury, SetTreasury, AuthorityTransfer, HotPathOpen, or SetSafeMode Proposal can be executed,
 /// and these proposals can only be executed under the SafeMode or Boot Proxy callpaths.
-/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(23, <open>)>)
+/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(23, <lock_dex>)>)
 ///
 /// BE VERY CAREFUL EXECUTING THIS PROPOSAL, IT SHOULD ONLY BE USED TO DISABLE THE DEX OR RECOVER FROM DISABLES
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -191,6 +191,31 @@ pub struct TransferGovernanceMetadata {
     /// The address to use for the Emergency governance role, which can halt the DEX or perform Ops functions
     #[prost(string, tag = "2")]
     pub emergency: ::prost::alloc::string::String,
+}
+/// OpsProposal will execute a non-sudo `protocolCmd()` call on the DEX via CrocPolicy.
+/// If passes, calls CrocPolicy.opsResolution (CrocSwapDex, <callpath>, <ABI Encoded Bytes(<cmd args>)>)
+///
+/// This proposal enables nativedex governance to perform everyday Ops functions on the DEX,
+/// and so the Ops or Emergency addresses could override any decisions made by this proposal.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct OpsProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<OpsMetadata>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct OpsMetadata {
+    /// The callpath index to use, see solidity-dex/contracts/mixins/StorageLayout.sol for the default values
+    #[prost(uint64, tag = "1")]
+    pub callpath: u64,
+    /// The ABI encoded bytes to pass to the opsResolution() call
+    #[prost(bytes = "vec", tag = "2")]
+    pub cmd_args: ::prost::alloc::vec::Vec<u8>,
 }
 /// QueryParamsRequest is request type for the Query/Params RPC method.
 #[allow(clippy::derive_partial_eq_without_eq)]
