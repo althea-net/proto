@@ -12,8 +12,8 @@ pub struct StakeAuthorization {
     #[prost(enumeration = "AuthorizationType", tag = "4")]
     pub authorization_type: i32,
     /// validators is the oneof that represents either allow_list or deny_list
-    #[prost(oneof = "stake_authorization::Validators", tags = "2, 3")]
-    pub validators: ::core::option::Option<stake_authorization::Validators>,
+    #[prost(oneof = "stake_authorization::ValidatorsEnum", tags = "2, 3")]
+    pub validators: ::core::option::Option<stake_authorization::ValidatorsEnum>,
 }
 /// Nested message and enum types in `StakeAuthorization`.
 pub mod stake_authorization {
@@ -27,7 +27,7 @@ pub mod stake_authorization {
     /// validators is the oneof that represents either allow_list or deny_list
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum Validators {
+    pub enum ValidatorsEnum {
         /// allow_list specifies list of validator addresses to whom grantee can delegate tokens on behalf of granter's
         /// account.
         #[prost(message, tag = "2")]
@@ -466,9 +466,7 @@ pub struct QueryValidatorsRequest {
     pub status: ::prost::alloc::string::String,
     /// pagination defines an optional pagination for the request.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageRequest,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QueryValidatorsResponse is response type for the Query/Validators RPC method
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -479,9 +477,7 @@ pub struct QueryValidatorsResponse {
     pub validators: ::prost::alloc::vec::Vec<Validator>,
     /// pagination defines the pagination in the response.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageResponse,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
 }
 /// QueryValidatorRequest is response type for the Query/Validator RPC method
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -509,9 +505,7 @@ pub struct QueryValidatorDelegationsRequest {
     pub validator_addr: ::prost::alloc::string::String,
     /// pagination defines an optional pagination for the request.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageRequest,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QueryValidatorDelegationsResponse is response type for the
 /// Query/ValidatorDelegations RPC method
@@ -522,9 +516,7 @@ pub struct QueryValidatorDelegationsResponse {
     pub delegation_responses: ::prost::alloc::vec::Vec<DelegationResponse>,
     /// pagination defines the pagination in the response.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageResponse,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
 }
 /// QueryValidatorUnbondingDelegationsRequest is required type for the
 /// Query/ValidatorUnbondingDelegations RPC method
@@ -536,9 +528,7 @@ pub struct QueryValidatorUnbondingDelegationsRequest {
     pub validator_addr: ::prost::alloc::string::String,
     /// pagination defines an optional pagination for the request.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageRequest,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QueryValidatorUnbondingDelegationsResponse is response type for the
 /// Query/ValidatorUnbondingDelegations RPC method.
@@ -549,9 +539,7 @@ pub struct QueryValidatorUnbondingDelegationsResponse {
     pub unbonding_responses: ::prost::alloc::vec::Vec<UnbondingDelegation>,
     /// pagination defines the pagination in the response.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageResponse,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
 }
 /// QueryDelegationRequest is request type for the Query/Delegation RPC method.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -603,9 +591,7 @@ pub struct QueryDelegatorDelegationsRequest {
     pub delegator_addr: ::prost::alloc::string::String,
     /// pagination defines an optional pagination for the request.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageRequest,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QueryDelegatorDelegationsResponse is response type for the
 /// Query/DelegatorDelegations RPC method.
@@ -617,9 +603,7 @@ pub struct QueryDelegatorDelegationsResponse {
     pub delegation_responses: ::prost::alloc::vec::Vec<DelegationResponse>,
     /// pagination defines the pagination in the response.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageResponse,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
 }
 /// QueryDelegatorUnbondingDelegationsRequest is request type for the
 /// Query/DelegatorUnbondingDelegations RPC method.
@@ -631,9 +615,7 @@ pub struct QueryDelegatorUnbondingDelegationsRequest {
     pub delegator_addr: ::prost::alloc::string::String,
     /// pagination defines an optional pagination for the request.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageRequest,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QueryUnbondingDelegatorDelegationsResponse is response type for the
 /// Query/UnbondingDelegatorDelegations RPC method.
@@ -644,9 +626,7 @@ pub struct QueryDelegatorUnbondingDelegationsResponse {
     pub unbonding_responses: ::prost::alloc::vec::Vec<UnbondingDelegation>,
     /// pagination defines the pagination in the response.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageResponse,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
 }
 /// QueryRedelegationsRequest is request type for the Query/Redelegations RPC
 /// method.
@@ -664,9 +644,7 @@ pub struct QueryRedelegationsRequest {
     pub dst_validator_addr: ::prost::alloc::string::String,
     /// pagination defines an optional pagination for the request.
     #[prost(message, optional, tag = "4")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageRequest,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QueryRedelegationsResponse is response type for the Query/Redelegations RPC
 /// method.
@@ -677,9 +655,7 @@ pub struct QueryRedelegationsResponse {
     pub redelegation_responses: ::prost::alloc::vec::Vec<RedelegationResponse>,
     /// pagination defines the pagination in the response.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageResponse,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
 }
 /// QueryDelegatorValidatorsRequest is request type for the
 /// Query/DelegatorValidators RPC method.
@@ -691,9 +667,7 @@ pub struct QueryDelegatorValidatorsRequest {
     pub delegator_addr: ::prost::alloc::string::String,
     /// pagination defines an optional pagination for the request.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageRequest,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QueryDelegatorValidatorsResponse is response type for the
 /// Query/DelegatorValidators RPC method.
@@ -705,9 +679,7 @@ pub struct QueryDelegatorValidatorsResponse {
     pub validators: ::prost::alloc::vec::Vec<Validator>,
     /// pagination defines the pagination in the response.
     #[prost(message, optional, tag = "2")]
-    pub pagination: ::core::option::Option<
-        super::super::base::query::v1beta1::PageResponse,
-    >,
+    pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
 }
 /// QueryDelegatorValidatorRequest is request type for the
 /// Query/DelegatorValidator RPC method.
@@ -775,8 +747,8 @@ pub struct QueryParamsResponse {
 /// Generated client implementations.
 pub mod query_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-    use tonic::codegen::*;
     use tonic::codegen::http::Uri;
+    use tonic::codegen::*;
     /// Query defines the gRPC querier service.
     #[derive(Debug, Clone)]
     pub struct QueryClient<T> {
@@ -821,9 +793,8 @@ pub mod query_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + Send + Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + Send + Sync,
         {
             QueryClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -862,49 +833,39 @@ pub mod query_client {
         pub async fn validators(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryValidatorsRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryValidatorsResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::QueryValidatorsResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Query/Validators",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Query/Validators");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("cosmos.staking.v1beta1.Query", "Validators"));
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "Validators",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// Validator queries validator info for given validator address.
         pub async fn validator(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryValidatorRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryValidatorResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::QueryValidatorResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Query/Validator",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Query/Validator");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("cosmos.staking.v1beta1.Query", "Validator"));
@@ -918,86 +879,68 @@ pub mod query_client {
             tonic::Response<super::QueryValidatorDelegationsResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.staking.v1beta1.Query/ValidatorDelegations",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "cosmos.staking.v1beta1.Query",
-                        "ValidatorDelegations",
-                    ),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "ValidatorDelegations",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// ValidatorUnbondingDelegations queries unbonding delegations of a validator.
         pub async fn validator_unbonding_delegations(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::QueryValidatorUnbondingDelegationsRequest,
-            >,
+            request: impl tonic::IntoRequest<super::QueryValidatorUnbondingDelegationsRequest>,
         ) -> std::result::Result<
             tonic::Response<super::QueryValidatorUnbondingDelegationsResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.staking.v1beta1.Query/ValidatorUnbondingDelegations",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "cosmos.staking.v1beta1.Query",
-                        "ValidatorUnbondingDelegations",
-                    ),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "ValidatorUnbondingDelegations",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// Delegation queries delegate info for given validator delegator pair.
         pub async fn delegation(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryDelegationRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryDelegationResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::QueryDelegationResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Query/Delegation",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Query/Delegation");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("cosmos.staking.v1beta1.Query", "Delegation"));
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "Delegation",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// UnbondingDelegation queries unbonding info for given validator delegator
@@ -1009,27 +952,21 @@ pub mod query_client {
             tonic::Response<super::QueryUnbondingDelegationResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.staking.v1beta1.Query/UnbondingDelegation",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "cosmos.staking.v1beta1.Query",
-                        "UnbondingDelegation",
-                    ),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "UnbondingDelegation",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// DelegatorDelegations queries all delegations of a given delegator address.
@@ -1040,89 +977,69 @@ pub mod query_client {
             tonic::Response<super::QueryDelegatorDelegationsResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.staking.v1beta1.Query/DelegatorDelegations",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "cosmos.staking.v1beta1.Query",
-                        "DelegatorDelegations",
-                    ),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "DelegatorDelegations",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// DelegatorUnbondingDelegations queries all unbonding delegations of a given
         /// delegator address.
         pub async fn delegator_unbonding_delegations(
             &mut self,
-            request: impl tonic::IntoRequest<
-                super::QueryDelegatorUnbondingDelegationsRequest,
-            >,
+            request: impl tonic::IntoRequest<super::QueryDelegatorUnbondingDelegationsRequest>,
         ) -> std::result::Result<
             tonic::Response<super::QueryDelegatorUnbondingDelegationsResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.staking.v1beta1.Query/DelegatorUnbondingDelegations",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "cosmos.staking.v1beta1.Query",
-                        "DelegatorUnbondingDelegations",
-                    ),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "DelegatorUnbondingDelegations",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// Redelegations queries redelegations of given address.
         pub async fn redelegations(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryRedelegationsRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryRedelegationsResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::QueryRedelegationsResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Query/Redelegations",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Query/Redelegations");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("cosmos.staking.v1beta1.Query", "Redelegations"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "Redelegations",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// DelegatorValidators queries all validators info for given delegator
@@ -1134,27 +1051,21 @@ pub mod query_client {
             tonic::Response<super::QueryDelegatorValidatorsResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.staking.v1beta1.Query/DelegatorValidators",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "cosmos.staking.v1beta1.Query",
-                        "DelegatorValidators",
-                    ),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "DelegatorValidators",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// DelegatorValidator queries validator info for given delegator validator
@@ -1166,75 +1077,59 @@ pub mod query_client {
             tonic::Response<super::QueryDelegatorValidatorResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.staking.v1beta1.Query/DelegatorValidator",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("cosmos.staking.v1beta1.Query", "DelegatorValidator"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "DelegatorValidator",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// HistoricalInfo queries the historical info for given height.
         pub async fn historical_info(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryHistoricalInfoRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryHistoricalInfoResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::QueryHistoricalInfoResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.staking.v1beta1.Query/HistoricalInfo",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("cosmos.staking.v1beta1.Query", "HistoricalInfo"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Query",
+                "HistoricalInfo",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// Pool queries the pool info.
         pub async fn pool(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryPoolRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryPoolResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::QueryPoolResponse>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Query/Pool",
-            );
+            let path = http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Query/Pool");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("cosmos.staking.v1beta1.Query", "Pool"));
@@ -1244,23 +1139,16 @@ pub mod query_client {
         pub async fn params(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryParamsRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryParamsResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::QueryParamsResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Query/Params",
-            );
+            let path = http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Query/Params");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("cosmos.staking.v1beta1.Query", "Params"));
@@ -1394,8 +1282,8 @@ pub struct MsgCancelUnbondingDelegationResponse {}
 /// Generated client implementations.
 pub mod msg_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-    use tonic::codegen::*;
     use tonic::codegen::http::Uri;
+    use tonic::codegen::*;
     /// Msg defines the staking Msg service.
     #[derive(Debug, Clone)]
     pub struct MsgClient<T> {
@@ -1427,10 +1315,7 @@ pub mod msg_client {
             let inner = tonic::client::Grpc::with_origin(inner, origin);
             Self { inner }
         }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> MsgClient<InterceptedService<T, F>>
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> MsgClient<InterceptedService<T, F>>
         where
             F: tonic::service::Interceptor,
             T::ResponseBody: Default,
@@ -1440,9 +1325,8 @@ pub mod msg_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + Send + Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + Send + Sync,
         {
             MsgClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -1481,54 +1365,44 @@ pub mod msg_client {
         pub async fn create_validator(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgCreateValidator>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgCreateValidatorResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::MsgCreateValidatorResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Msg/CreateValidator",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Msg/CreateValidator");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("cosmos.staking.v1beta1.Msg", "CreateValidator"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Msg",
+                "CreateValidator",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// EditValidator defines a method for editing an existing validator.
         pub async fn edit_validator(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgEditValidator>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgEditValidatorResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::MsgEditValidatorResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Msg/EditValidator",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Msg/EditValidator");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "EditValidator"));
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Msg",
+                "EditValidator",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// Delegate defines a method for performing a delegation of coins
@@ -1536,23 +1410,16 @@ pub mod msg_client {
         pub async fn delegate(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgDelegate>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgDelegateResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::MsgDelegateResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Msg/Delegate",
-            );
+            let path = http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Msg/Delegate");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "Delegate"));
@@ -1563,28 +1430,22 @@ pub mod msg_client {
         pub async fn begin_redelegate(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgBeginRedelegate>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgBeginRedelegateResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::MsgBeginRedelegateResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Msg/BeginRedelegate",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Msg/BeginRedelegate");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("cosmos.staking.v1beta1.Msg", "BeginRedelegate"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Msg",
+                "BeginRedelegate",
+            ));
             self.inner.unary(req, path, codec).await
         }
         /// Undelegate defines a method for performing an undelegation from a
@@ -1592,23 +1453,17 @@ pub mod msg_client {
         pub async fn undelegate(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgUndelegate>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgUndelegateResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::MsgUndelegateResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/cosmos.staking.v1beta1.Msg/Undelegate",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/cosmos.staking.v1beta1.Msg/Undelegate");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "Undelegate"));
@@ -1625,27 +1480,21 @@ pub mod msg_client {
             tonic::Response<super::MsgCancelUnbondingDelegationResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/cosmos.staking.v1beta1.Msg/CancelUnbondingDelegation",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "cosmos.staking.v1beta1.Msg",
-                        "CancelUnbondingDelegation",
-                    ),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.staking.v1beta1.Msg",
+                "CancelUnbondingDelegation",
+            ));
             self.inner.unary(req, path, codec).await
         }
     }
