@@ -12,8 +12,8 @@ pub struct StakeAuthorization {
     #[prost(enumeration = "AuthorizationType", tag = "4")]
     pub authorization_type: i32,
     /// validators is the oneof that represents either allow_list or deny_list
-    #[prost(oneof = "stake_authorization::ValidatorsEnum", tags = "2, 3")]
-    pub validators: Option<stake_authorization::ValidatorsEnum>
+    #[prost(oneof = "stake_authorization::Validators", tags = "2, 3")]
+    pub validators: ::core::option::Option<stake_authorization::Validators>,
 }
 /// Nested message and enum types in `StakeAuthorization`.
 pub mod stake_authorization {
@@ -27,7 +27,7 @@ pub mod stake_authorization {
     /// validators is the oneof that represents either allow_list or deny_list
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum ValidatorsEnum {
+    pub enum Validators {
         /// allow_list specifies list of validator addresses to whom grantee can delegate tokens on behalf of granter's
         /// account.
         #[prost(message, tag = "2")]
@@ -176,6 +176,8 @@ pub struct Validator {
     #[prost(message, optional, tag = "10")]
     pub commission: ::core::option::Option<Commission>,
     /// min_self_delegation is the validator's self declared minimum self delegation.
+    ///
+    /// Since: cosmos-sdk 0.46
     #[prost(string, tag = "11")]
     pub min_self_delegation: ::prost::alloc::string::String,
 }
@@ -331,6 +333,9 @@ pub struct Params {
     /// bond_denom defines the bondable coin denomination.
     #[prost(string, tag = "5")]
     pub bond_denom: ::prost::alloc::string::String,
+    /// min_commission_rate is the chain-wide minimum commission rate that a validator can charge their delegators
+    #[prost(string, tag = "6")]
+    pub min_commission_rate: ::prost::alloc::string::String,
 }
 /// DelegationResponse is equivalent to Delegation except that it contains a
 /// balance in addition to shares which is more suitable for client responses.
@@ -490,7 +495,7 @@ pub struct QueryValidatorRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryValidatorResponse {
-    /// validator defines the the validator info.
+    /// validator defines the validator info.
     #[prost(message, optional, tag = "1")]
     pub validator: ::core::option::Option<Validator>,
 }
@@ -695,7 +700,7 @@ pub struct QueryDelegatorValidatorsRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryDelegatorValidatorsResponse {
-    /// validators defines the the validators' info of a delegator.
+    /// validators defines the validators' info of a delegator.
     #[prost(message, repeated, tag = "1")]
     pub validators: ::prost::alloc::vec::Vec<Validator>,
     /// pagination defines the pagination in the response.
@@ -721,7 +726,7 @@ pub struct QueryDelegatorValidatorRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryDelegatorValidatorResponse {
-    /// validator defines the the validator info.
+    /// validator defines the validator info.
     #[prost(message, optional, tag = "1")]
     pub validator: ::core::option::Option<Validator>,
 }
@@ -1363,6 +1368,29 @@ pub struct MsgUndelegateResponse {
     #[prost(message, optional, tag = "1")]
     pub completion_time: ::core::option::Option<::prost_types::Timestamp>,
 }
+/// MsgCancelUnbondingDelegation defines the SDK message for performing a cancel unbonding delegation for delegator
+///
+/// Since: cosmos-sdk 0.46
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgCancelUnbondingDelegation {
+    #[prost(string, tag = "1")]
+    pub delegator_address: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub validator_address: ::prost::alloc::string::String,
+    /// amount is always less than or equal to unbonding delegation entry balance
+    #[prost(message, optional, tag = "3")]
+    pub amount: ::core::option::Option<super::super::base::v1beta1::Coin>,
+    /// creation_height is the height which the unbonding took place.
+    #[prost(int64, tag = "4")]
+    pub creation_height: i64,
+}
+/// MsgCancelUnbondingDelegationResponse
+///
+/// Since: cosmos-sdk 0.46
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgCancelUnbondingDelegationResponse {}
 /// Generated client implementations.
 pub mod msg_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -1584,6 +1612,40 @@ pub mod msg_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "Undelegate"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// CancelUnbondingDelegation defines a method for performing canceling the unbonding delegation
+        /// and delegate back to previous validator.
+        ///
+        /// Since: cosmos-sdk 0.46
+        pub async fn cancel_unbonding_delegation(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgCancelUnbondingDelegation>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgCancelUnbondingDelegationResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.staking.v1beta1.Msg/CancelUnbondingDelegation",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "cosmos.staking.v1beta1.Msg",
+                        "CancelUnbondingDelegation",
+                    ),
+                );
             self.inner.unary(req, path, codec).await
         }
     }

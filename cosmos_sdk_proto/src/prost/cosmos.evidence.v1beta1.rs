@@ -1,17 +1,3 @@
-/// Equivocation implements the Evidence interface and defines evidence of double
-/// signing misbehavior.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Equivocation {
-    #[prost(int64, tag = "1")]
-    pub height: i64,
-    #[prost(message, optional, tag = "2")]
-    pub time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(int64, tag = "3")]
-    pub power: i64,
-    #[prost(string, tag = "4")]
-    pub consensus_address: ::prost::alloc::string::String,
-}
 /// GenesisState defines the evidence module's genesis state.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -200,6 +186,20 @@ pub mod query_client {
             self.inner.unary(req, path, codec).await
         }
     }
+}
+/// Equivocation implements the Evidence interface and defines evidence of double
+/// signing misbehavior.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Equivocation {
+    #[prost(int64, tag = "1")]
+    pub height: i64,
+    #[prost(message, optional, tag = "2")]
+    pub time: ::core::option::Option<::prost_types::Timestamp>,
+    #[prost(int64, tag = "3")]
+    pub power: i64,
+    #[prost(string, tag = "4")]
+    pub consensus_address: ::prost::alloc::string::String,
 }
 /// MsgSubmitEvidence represents a message that supports submitting arbitrary
 /// Evidence of misbehavior such as equivocation or counterfactual signing.

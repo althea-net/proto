@@ -14,13 +14,14 @@ pub struct GenericAuthorization {
 pub struct Grant {
     #[prost(message, optional, tag = "1")]
     pub authorization: ::core::option::Option<::prost_types::Any>,
+    /// time when the grant will expire and will be pruned. If null, then the grant
+    /// doesn't have a time expiration (other conditions  in `authorization`
+    /// may apply to invalidate the grant)
     #[prost(message, optional, tag = "2")]
     pub expiration: ::core::option::Option<::prost_types::Timestamp>,
 }
 /// GrantAuthorization extends a grant with both the addresses of the grantee and granter.
 /// It is used in genesis.proto and query.proto
-///
-/// Since: cosmos-sdk 0.45.2
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GrantAuthorization {
@@ -32,6 +33,21 @@ pub struct GrantAuthorization {
     pub authorization: ::core::option::Option<::prost_types::Any>,
     #[prost(message, optional, tag = "4")]
     pub expiration: ::core::option::Option<::prost_types::Timestamp>,
+}
+/// GrantQueueItem contains the list of TypeURL of a sdk.Msg.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GrantQueueItem {
+    /// msg_type_urls contains the list of TypeURL of a sdk.Msg.
+    #[prost(string, repeated, tag = "1")]
+    pub msg_type_urls: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// GenesisState defines the authz module's genesis state.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GenesisState {
+    #[prost(message, repeated, tag = "1")]
+    pub authorization: ::prost::alloc::vec::Vec<GrantAuthorization>,
 }
 /// EventGrant is emitted on Msg/Grant
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -60,13 +76,6 @@ pub struct EventRevoke {
     /// Grantee account address
     #[prost(string, tag = "4")]
     pub grantee: ::prost::alloc::string::String,
-}
-/// GenesisState defines the authz module's genesis state.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GenesisState {
-    #[prost(message, repeated, tag = "1")]
-    pub authorization: ::prost::alloc::vec::Vec<GrantAuthorization>,
 }
 /// QueryGrantsRequest is the request type for the Query/Grants RPC method.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -262,7 +271,7 @@ pub mod query_client {
         }
         /// GranterGrants returns list of `GrantAuthorization`, granted by granter.
         ///
-        /// Since: cosmos-sdk 0.45.2
+        /// Since: cosmos-sdk 0.46
         pub async fn granter_grants(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryGranterGrantsRequest>,
@@ -290,7 +299,7 @@ pub mod query_client {
         }
         /// GranteeGrants returns a list of `GrantAuthorization` by grantee.
         ///
-        /// Since: cosmos-sdk 0.45.2
+        /// Since: cosmos-sdk 0.46
         pub async fn grantee_grants(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryGranteeGrantsRequest>,
