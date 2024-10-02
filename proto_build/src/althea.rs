@@ -45,7 +45,8 @@ fn compile_althea_protos(
     regex_replacements: &[RegexReplace],
 ) {
     info!(
-        "[info] Compiling .proto files to Rust into '{}'...",
+        "[info] Compiling .proto files in {} to Rust into '{}'...",
+        root_path.display(),
         out_path.display()
     );
 

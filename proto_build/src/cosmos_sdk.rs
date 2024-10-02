@@ -113,7 +113,9 @@ fn compile_sdk_protos_and_services(
     let proto_include_paths = [
         &format!("{}proto", root.display()),
         &GOOGLE_COMMON_ROOT.to_string(),
-        &format!("{}third_party/proto", root.display()),
+        // Cosmos sdk removed their third party proto directory
+        // so now we use a copy in this repo
+        "../third_party/proto",
     ]
     .map(Path::new)
     .map(Path::to_path_buf);
