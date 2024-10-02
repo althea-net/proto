@@ -141,6 +141,8 @@ fn compile_protos(
         );
     }
 
+    info!("Compiling proto files... {:#?}", protos);
+
     // create directories for temporary build dirs
     fs::create_dir_all(tmp_path)
         .unwrap_or_else(|_| panic!("Failed to create {:?}", tmp_path.to_str()));
