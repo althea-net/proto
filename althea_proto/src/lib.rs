@@ -102,8 +102,7 @@ pub mod ethermint {
     }
 }
 
-/// note to future readers I have hand copied the RegisteredInterchainAccount file from ibc.applications.interchain_accounts.v1.rs which is compiled
-/// but not checked in into gaia.icaauth.v1.rs
+/// note to future readers I have hand copied these two files from the gravity_proto folder
 pub mod althea_test {
     pub mod gaia {
         pub mod globalfee {
