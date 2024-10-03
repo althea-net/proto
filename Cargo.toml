@@ -3,10 +3,10 @@ members = ["althea_proto", "cosmos_sdk_proto", "gravity_proto", "proto_build"]
 resolver = "2"
 
 [workspace.dependencies]
-prost = "0.12"
-prost-build = "0.12"
-prost-types = "0.12"
-tonic = "0.10"
-tonic-build = "0.10"
+prost = "0.13"
+prost-build = "0.13"
+prost-types = "0.13"
+tonic = "0.12"
+tonic-build = "0.12"
 log = "0.4"
-env_logger = "0.10"
+env_logger = "0.11"

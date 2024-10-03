@@ -83,6 +83,8 @@ pub const IBC_PROTO_REGEX_REPLACE: RegexReplace =
 
 fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+    // used by protobuf-src in order to compile protoc on the fly rather than depend on system protoc
+    std::env::set_var("PROTOC", protobuf_src::protoc());
 
     // Initiate Althea
     althea_main(ALTHEA_ROOT, TMP_PATH, ALTHEA_OUT_PATH);
@@ -158,7 +160,7 @@ fn compile_protos(
         .build_client(true)
         .build_server(false)
         .out_dir(tmp_path)
-        .compile(&protos, proto_include_paths)
+        .compile_protos(&protos, proto_include_paths)
         .unwrap();
 
     copy_generated_files(
