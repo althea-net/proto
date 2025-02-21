@@ -59,6 +59,7 @@ fn compile_gravity_protos(
 
     let proto_paths = [
         &format!("{}module/proto/gravity/v1", root.display()),
+        &format!("{}module/proto/gravity/v2", root.display()),
         &format!("{}module/proto/auction/v1", root.display()),
     ]
     .map(Path::new)

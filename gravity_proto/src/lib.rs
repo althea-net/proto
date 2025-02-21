@@ -7,6 +7,9 @@
 pub use cosmos_sdk_proto;
 pub mod gravity {
     include!("prost/gravity.v1.rs");
+    pub mod v2 {
+        include!("prost/gravity.v2.rs");
+    }
     include!("ethereum_claim.rs");
 }
 pub mod auction {
