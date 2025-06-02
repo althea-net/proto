@@ -153,8 +153,17 @@ pub mod cosmos {
 
     /// Messages and services handling governance
     pub mod gov {
+        pub mod v1 {
+            include!("prost/cosmos.gov.v1.rs");
+        }
         pub mod v1beta1 {
             include!("prost/cosmos.gov.v1beta1.rs");
+        }
+    }
+
+    pub mod group {
+        pub mod v1 {
+            include!("prost/cosmos.group.v1.rs");
         }
     }
 
@@ -162,6 +171,12 @@ pub mod cosmos {
     pub mod mint {
         pub mod v1beta1 {
             include!("prost/cosmos.mint.v1beta1.rs");
+        }
+    }
+
+    pub mod nft {
+        pub mod v1beta1 {
+            include!("prost/cosmos.nft.v1beta1.rs");
         }
     }
 
