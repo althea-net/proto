@@ -23,6 +23,19 @@ pub struct ModuleAccount {
     #[prost(string, repeated, tag = "3")]
     pub permissions: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
+/// ModuleCredential represents a unclaimable pubkey for base accounts controlled by modules.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ModuleCredential {
+    /// module_name is the name of the module used for address derivation (passed into address.Module).
+    #[prost(string, tag = "1")]
+    pub module_name: ::prost::alloc::string::String,
+    /// derivation_keys is for deriving a module account address (passed into address.Module)
+    /// adding more keys creates sub-account addresses (passed into address.Derive)
+    #[prost(bytes = "vec", repeated, tag = "2")]
+    pub derivation_keys: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+}
 /// Params defines the parameters for the auth module.
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct Params {
@@ -40,7 +53,7 @@ pub struct Params {
 /// GenesisState defines the auth module's genesis state.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
-    /// params defines all the paramaters of the module.
+    /// params defines all the parameters of the module.
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
     /// accounts are the accounts present at genesis.
@@ -171,11 +184,19 @@ pub struct AddressStringToBytesResponse {
 /// Since: cosmos-sdk 0.46.2
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct QueryAccountAddressByIdRequest {
+    /// Deprecated, use account_id instead
+    ///
     /// id is the account number of the address to be queried. This field
     /// should have been an uint64 (like all account numbers), and will be
     /// updated to uint64 in a future version of the auth query.
+    #[deprecated]
     #[prost(int64, tag = "1")]
     pub id: i64,
+    /// account_id is the account number of the address to be queried.
+    ///
+    /// Since: cosmos-sdk 0.47
+    #[prost(uint64, tag = "2")]
+    pub account_id: u64,
 }
 /// QueryAccountAddressByIDResponse is the response type for AccountAddressByID rpc method
 ///
@@ -184,6 +205,24 @@ pub struct QueryAccountAddressByIdRequest {
 pub struct QueryAccountAddressByIdResponse {
     #[prost(string, tag = "1")]
     pub account_address: ::prost::alloc::string::String,
+}
+/// QueryAccountInfoRequest is the Query/AccountInfo request type.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAccountInfoRequest {
+    /// address is the account address string.
+    #[prost(string, tag = "1")]
+    pub address: ::prost::alloc::string::String,
+}
+/// QueryAccountInfoResponse is the Query/AccountInfo response type.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAccountInfoResponse {
+    /// info is the account info which is represented by BaseAccount.
+    #[prost(message, optional, tag = "1")]
+    pub info: ::core::option::Option<BaseAccount>,
 }
 /// Generated client implementations.
 pub mod query_client {
@@ -277,7 +316,10 @@ pub mod query_client {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
-        /// Accounts returns all the existing accounts
+        /// Accounts returns all the existing accounts.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         ///
         /// Since: cosmos-sdk 0.43
         pub async fn accounts(
@@ -520,6 +562,175 @@ pub mod query_client {
                 .insert(
                     GrpcMethod::new("cosmos.auth.v1beta1.Query", "AddressStringToBytes"),
                 );
+            self.inner.unary(req, path, codec).await
+        }
+        /// AccountInfo queries account info which is common to all account types.
+        ///
+        /// Since: cosmos-sdk 0.47
+        pub async fn account_info(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryAccountInfoRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryAccountInfoResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.auth.v1beta1.Query/AccountInfo",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.auth.v1beta1.Query", "AccountInfo"));
+            self.inner.unary(req, path, codec).await
+        }
+    }
+}
+/// MsgUpdateParams is the Msg/UpdateParams request type.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParams {
+    /// authority is the address that controls the module (defaults to x/gov unless overwritten).
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// params defines the x/auth parameters to update.
+    ///
+    /// NOTE: All parameters must be supplied.
+    #[prost(message, optional, tag = "2")]
+    pub params: ::core::option::Option<Params>,
+}
+/// MsgUpdateParamsResponse defines the response structure for executing a
+/// MsgUpdateParams message.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParamsResponse {}
+/// Generated client implementations.
+pub mod msg_client {
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
+    use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
+    /// Msg defines the x/auth Msg service.
+    #[derive(Debug, Clone)]
+    pub struct MsgClient<T> {
+        inner: tonic::client::Grpc<T>,
+    }
+    impl MsgClient<tonic::transport::Channel> {
+        /// Attempt to create a new client by connecting to a given endpoint.
+        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
+        where
+            D: TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+    }
+    impl<T> MsgClient<T>
+    where
+        T: tonic::client::GrpcService<tonic::body::BoxBody>,
+        T::Error: Into<StdError>,
+        T::ResponseBody: Body<Data = Bytes> + std::marker::Send + 'static,
+        <T::ResponseBody as Body>::Error: Into<StdError> + std::marker::Send,
+    {
+        pub fn new(inner: T) -> Self {
+            let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
+            Self { inner }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> MsgClient<InterceptedService<T, F>>
+        where
+            F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                >,
+            >,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+        {
+            MsgClient::new(InterceptedService::new(inner, interceptor))
+        }
+        /// Compress requests with the given encoding.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
+            self
+        }
+        /// Enable decompressing responses.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
+            self
+        }
+        /// UpdateParams defines a (governance) operation for updating the x/auth module
+        /// parameters. The authority defaults to the x/gov module account.
+        ///
+        /// Since: cosmos-sdk 0.47
+        pub async fn update_params(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgUpdateParams>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgUpdateParamsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.auth.v1beta1.Msg/UpdateParams",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.auth.v1beta1.Msg", "UpdateParams"));
             self.inner.unary(req, path, codec).await
         }
     }

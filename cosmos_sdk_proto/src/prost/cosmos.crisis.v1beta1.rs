@@ -10,16 +10,37 @@ pub struct GenesisState {
 /// MsgVerifyInvariant represents a message to verify a particular invariance.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgVerifyInvariant {
+    /// sender is the account address of private key to send coins to fee collector account.
     #[prost(string, tag = "1")]
     pub sender: ::prost::alloc::string::String,
+    /// name of the invariant module.
     #[prost(string, tag = "2")]
     pub invariant_module_name: ::prost::alloc::string::String,
+    /// invariant_route is the msg's invariant route.
     #[prost(string, tag = "3")]
     pub invariant_route: ::prost::alloc::string::String,
 }
 /// MsgVerifyInvariantResponse defines the Msg/VerifyInvariant response type.
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgVerifyInvariantResponse {}
+/// MsgUpdateParams is the Msg/UpdateParams request type.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParams {
+    /// authority is the address that controls the module (defaults to x/gov unless overwritten).
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// constant_fee defines the x/crisis parameter.
+    #[prost(message, optional, tag = "2")]
+    pub constant_fee: ::core::option::Option<super::super::base::v1beta1::Coin>,
+}
+/// MsgUpdateParamsResponse defines the response structure for executing a
+/// MsgUpdateParams message.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParamsResponse {}
 /// Generated client implementations.
 pub mod msg_client {
     #![allow(
@@ -112,7 +133,7 @@ pub mod msg_client {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
-        /// VerifyInvariant defines a method to verify a particular invariance.
+        /// VerifyInvariant defines a method to verify a particular invariant.
         pub async fn verify_invariant(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgVerifyInvariant>,
@@ -135,6 +156,34 @@ pub mod msg_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("cosmos.crisis.v1beta1.Msg", "VerifyInvariant"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// UpdateParams defines a governance operation for updating the x/crisis module
+        /// parameters. The authority is defined in the keeper.
+        ///
+        /// Since: cosmos-sdk 0.47
+        pub async fn update_params(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgUpdateParams>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgUpdateParamsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.crisis.v1beta1.Msg/UpdateParams",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.crisis.v1beta1.Msg", "UpdateParams"));
             self.inner.unary(req, path, codec).await
         }
     }

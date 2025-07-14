@@ -39,6 +39,12 @@ pub struct GrantQueueItem {
     #[prost(string, repeated, tag = "1")]
     pub msg_type_urls: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
+/// GenesisState defines the authz module's genesis state.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GenesisState {
+    #[prost(message, repeated, tag = "1")]
+    pub authorization: ::prost::alloc::vec::Vec<GrantAuthorization>,
+}
 /// EventGrant is emitted on Msg/Grant
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EventGrant {
@@ -64,12 +70,6 @@ pub struct EventRevoke {
     /// Grantee account address
     #[prost(string, tag = "4")]
     pub grantee: ::prost::alloc::string::String,
-}
-/// GenesisState defines the authz module's genesis state.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GenesisState {
-    #[prost(message, repeated, tag = "1")]
-    pub authorization: ::prost::alloc::vec::Vec<GrantAuthorization>,
 }
 /// QueryGrantsRequest is the request type for the Query/Grants RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -122,7 +122,7 @@ pub struct QueryGranterGrantsResponse {
         super::super::base::query::v1beta1::PageResponse,
     >,
 }
-/// QueryGranteeGrantsRequest is the request type for the Query/IssuedGrants RPC method.
+/// QueryGranteeGrantsRequest is the request type for the Query/GranteeGrants RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryGranteeGrantsRequest {
     #[prost(string, tag = "1")]
@@ -329,12 +329,9 @@ pub struct MsgGrant {
     #[prost(message, optional, tag = "3")]
     pub grant: ::core::option::Option<Grant>,
 }
-/// MsgExecResponse defines the Msg/MsgExecResponse response type.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgExecResponse {
-    #[prost(bytes = "vec", repeated, tag = "1")]
-    pub results: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
-}
+/// MsgGrantResponse defines the Msg/MsgGrant response type.
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgGrantResponse {}
 /// MsgExec attempts to execute the provided messages using
 /// authorizations granted to the grantee. Each message should have only
 /// one signer corresponding to the granter of the authorization.
@@ -342,15 +339,18 @@ pub struct MsgExecResponse {
 pub struct MsgExec {
     #[prost(string, tag = "1")]
     pub grantee: ::prost::alloc::string::String,
-    /// Authorization Msg requests to execute. Each msg must implement Authorization interface
+    /// Execute Msg.
     /// The x/authz will try to find a grant matching (msg.signers\[0\], grantee, MsgTypeURL(msg))
     /// triple and validate it.
     #[prost(message, repeated, tag = "2")]
     pub msgs: ::prost::alloc::vec::Vec<::prost_types::Any>,
 }
-/// MsgGrantResponse defines the Msg/MsgGrant response type.
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgGrantResponse {}
+/// MsgExecResponse defines the Msg/MsgExecResponse response type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgExecResponse {
+    #[prost(bytes = "vec", repeated, tag = "1")]
+    pub results: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+}
 /// MsgRevoke revokes any authorization with the provided sdk.Msg type on the
 /// granter's account with that has been granted to the grantee.
 #[derive(Clone, PartialEq, ::prost::Message)]

@@ -224,7 +224,7 @@ pub mod query_client {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
-        /// Allowance returns fee granted to the grantee by the granter.
+        /// Allowance returns granted allwance to the grantee by the granter.
         pub async fn allowance(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryAllowanceRequest>,
@@ -249,7 +249,7 @@ pub mod query_client {
                 .insert(GrpcMethod::new("cosmos.feegrant.v1beta1.Query", "Allowance"));
             self.inner.unary(req, path, codec).await
         }
-        /// Allowances returns all the grants for address.
+        /// Allowances returns all the grants for the given grantee address.
         pub async fn allowances(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryAllowancesRequest>,
@@ -338,6 +338,20 @@ pub struct MsgRevokeAllowance {
 /// MsgRevokeAllowanceResponse defines the Msg/RevokeAllowanceResponse response type.
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgRevokeAllowanceResponse {}
+/// MsgPruneAllowances prunes expired fee allowances.
+///
+/// Since cosmos-sdk 0.50
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgPruneAllowances {
+    /// pruner is the address of the user pruning expired allowances.
+    #[prost(string, tag = "1")]
+    pub pruner: ::prost::alloc::string::String,
+}
+/// MsgPruneAllowancesResponse defines the Msg/PruneAllowancesResponse response type.
+///
+/// Since cosmos-sdk 0.50
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgPruneAllowancesResponse {}
 /// Generated client implementations.
 pub mod msg_client {
     #![allow(
@@ -483,6 +497,35 @@ pub mod msg_client {
             req.extensions_mut()
                 .insert(
                     GrpcMethod::new("cosmos.feegrant.v1beta1.Msg", "RevokeAllowance"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        /// PruneAllowances prunes expired fee allowances, currently up to 75 at a time.
+        ///
+        /// Since cosmos-sdk 0.50
+        pub async fn prune_allowances(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgPruneAllowances>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgPruneAllowancesResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.feegrant.v1beta1.Msg/PruneAllowances",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("cosmos.feegrant.v1beta1.Msg", "PruneAllowances"),
                 );
             self.inner.unary(req, path, codec).await
         }

@@ -49,6 +49,8 @@ pub enum AuthorizationType {
     Undelegate = 2,
     /// AUTHORIZATION_TYPE_REDELEGATE defines an authorization type for Msg/BeginRedelegate
     Redelegate = 3,
+    /// AUTHORIZATION_TYPE_CANCEL_UNBONDING_DELEGATION defines an authorization type for Msg/MsgCancelUnbondingDelegation
+    CancelUnbondingDelegation = 4,
 }
 impl AuthorizationType {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -61,6 +63,9 @@ impl AuthorizationType {
             Self::Delegate => "AUTHORIZATION_TYPE_DELEGATE",
             Self::Undelegate => "AUTHORIZATION_TYPE_UNDELEGATE",
             Self::Redelegate => "AUTHORIZATION_TYPE_REDELEGATE",
+            Self::CancelUnbondingDelegation => {
+                "AUTHORIZATION_TYPE_CANCEL_UNBONDING_DELEGATION"
+            }
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -70,6 +75,9 @@ impl AuthorizationType {
             "AUTHORIZATION_TYPE_DELEGATE" => Some(Self::Delegate),
             "AUTHORIZATION_TYPE_UNDELEGATE" => Some(Self::Undelegate),
             "AUTHORIZATION_TYPE_REDELEGATE" => Some(Self::Redelegate),
+            "AUTHORIZATION_TYPE_CANCEL_UNBONDING_DELEGATION" => {
+                Some(Self::CancelUnbondingDelegation)
+            }
             _ => None,
         }
     }
@@ -173,6 +181,12 @@ pub struct Validator {
     /// Since: cosmos-sdk 0.46
     #[prost(string, tag = "11")]
     pub min_self_delegation: ::prost::alloc::string::String,
+    /// strictly positive if this validator's unbonding has been stopped by external modules
+    #[prost(int64, tag = "12")]
+    pub unbonding_on_hold_ref_count: i64,
+    /// list of unbonding ids, each uniquely identifing an unbonding of this validator
+    #[prost(uint64, repeated, tag = "13")]
+    pub unbonding_ids: ::prost::alloc::vec::Vec<u64>,
 }
 /// ValAddresses defines a repeated set of validator addresses.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -220,10 +234,10 @@ pub struct DvvTriplets {
 /// validator.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Delegation {
-    /// delegator_address is the bech32-encoded address of the delegator.
+    /// delegator_address is the encoded address of the delegator.
     #[prost(string, tag = "1")]
     pub delegator_address: ::prost::alloc::string::String,
-    /// validator_address is the bech32-encoded address of the validator.
+    /// validator_address is the encoded address of the validator.
     #[prost(string, tag = "2")]
     pub validator_address: ::prost::alloc::string::String,
     /// shares define the delegation shares received.
@@ -234,10 +248,10 @@ pub struct Delegation {
 /// for a single validator in an time-ordered list.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UnbondingDelegation {
-    /// delegator_address is the bech32-encoded address of the delegator.
+    /// delegator_address is the encoded address of the delegator.
     #[prost(string, tag = "1")]
     pub delegator_address: ::prost::alloc::string::String,
-    /// validator_address is the bech32-encoded address of the validator.
+    /// validator_address is the encoded address of the validator.
     #[prost(string, tag = "2")]
     pub validator_address: ::prost::alloc::string::String,
     /// entries are the unbonding delegation entries.
@@ -261,6 +275,12 @@ pub struct UnbondingDelegationEntry {
     /// balance defines the tokens to receive at completion.
     #[prost(string, tag = "4")]
     pub balance: ::prost::alloc::string::String,
+    /// Incrementing id that uniquely identifies this entry
+    #[prost(uint64, tag = "5")]
+    pub unbonding_id: u64,
+    /// Strictly positive if this entry's unbonding has been stopped by external modules
+    #[prost(int64, tag = "6")]
+    pub unbonding_on_hold_ref_count: i64,
 }
 /// RedelegationEntry defines a redelegation object with relevant metadata.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -277,6 +297,12 @@ pub struct RedelegationEntry {
     /// shares_dst is the amount of destination-validator shares created by redelegation.
     #[prost(string, tag = "4")]
     pub shares_dst: ::prost::alloc::string::String,
+    /// Incrementing id that uniquely identifies this entry
+    #[prost(uint64, tag = "5")]
+    pub unbonding_id: u64,
+    /// Strictly positive if this entry's unbonding has been stopped by external modules
+    #[prost(int64, tag = "6")]
+    pub unbonding_on_hold_ref_count: i64,
 }
 /// Redelegation contains the list of a particular delegator's redelegating bonds
 /// from a particular source validator to a particular destination validator.
@@ -297,7 +323,7 @@ pub struct Redelegation {
     #[prost(message, repeated, tag = "4")]
     pub entries: ::prost::alloc::vec::Vec<RedelegationEntry>,
 }
-/// Params defines the parameters for the staking module.
+/// Params defines the parameters for the x/staking module.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
     /// unbonding_time is the time duration of unbonding.
@@ -357,6 +383,15 @@ pub struct Pool {
     #[prost(string, tag = "2")]
     pub bonded_tokens: ::prost::alloc::string::String,
 }
+/// ValidatorUpdates defines an array of abci.ValidatorUpdate objects.
+/// TODO: explore moving this to proto/cosmos/base to separate modules from tendermint dependence
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ValidatorUpdates {
+    #[prost(message, repeated, tag = "1")]
+    pub updates: ::prost::alloc::vec::Vec<
+        crate::tendermint::abci::ValidatorUpdate,
+    >,
+}
 /// BondStatus is the status of a validator.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
@@ -394,10 +429,43 @@ impl BondStatus {
         }
     }
 }
+/// Infraction indicates the infraction a validator commited.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum Infraction {
+    /// UNSPECIFIED defines an empty infraction.
+    Unspecified = 0,
+    /// DOUBLE_SIGN defines a validator that double-signs a block.
+    DoubleSign = 1,
+    /// DOWNTIME defines a validator that missed signing too many blocks.
+    Downtime = 2,
+}
+impl Infraction {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "INFRACTION_UNSPECIFIED",
+            Self::DoubleSign => "INFRACTION_DOUBLE_SIGN",
+            Self::Downtime => "INFRACTION_DOWNTIME",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "INFRACTION_UNSPECIFIED" => Some(Self::Unspecified),
+            "INFRACTION_DOUBLE_SIGN" => Some(Self::DoubleSign),
+            "INFRACTION_DOWNTIME" => Some(Self::Downtime),
+            _ => None,
+        }
+    }
+}
 /// GenesisState defines the staking module's genesis state.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
-    /// params defines all the paramaters of related to deposit.
+    /// params defines all the parameters of related to deposit.
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
     /// last_total_power tracks the total amounts of bonded tokens recorded during
@@ -408,7 +476,7 @@ pub struct GenesisState {
     /// of the last-block's bonded validators.
     #[prost(message, repeated, tag = "3")]
     pub last_validator_powers: ::prost::alloc::vec::Vec<LastValidatorPower>,
-    /// delegations defines the validator set at genesis.
+    /// validators defines the validator set at genesis.
     #[prost(message, repeated, tag = "4")]
     pub validators: ::prost::alloc::vec::Vec<Validator>,
     /// delegations defines the delegations active at genesis.
@@ -420,6 +488,7 @@ pub struct GenesisState {
     /// redelegations defines the redelegations active at genesis.
     #[prost(message, repeated, tag = "7")]
     pub redelegations: ::prost::alloc::vec::Vec<Redelegation>,
+    /// exported defines a bool to identify whether the chain dealing with exported or initialized genesis.
     #[prost(bool, tag = "8")]
     pub exported: bool,
 }
@@ -813,6 +882,9 @@ pub mod query_client {
             self
         }
         /// Validators queries all validators that match the given status.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         pub async fn validators(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryValidatorsRequest>,
@@ -863,6 +935,9 @@ pub mod query_client {
             self.inner.unary(req, path, codec).await
         }
         /// ValidatorDelegations queries delegate info for given validator.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         pub async fn validator_delegations(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryValidatorDelegationsRequest>,
@@ -893,6 +968,9 @@ pub mod query_client {
             self.inner.unary(req, path, codec).await
         }
         /// ValidatorUnbondingDelegations queries unbonding delegations of a validator.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         pub async fn validator_unbonding_delegations(
             &mut self,
             request: impl tonic::IntoRequest<
@@ -981,6 +1059,9 @@ pub mod query_client {
             self.inner.unary(req, path, codec).await
         }
         /// DelegatorDelegations queries all delegations of a given delegator address.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         pub async fn delegator_delegations(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryDelegatorDelegationsRequest>,
@@ -1012,6 +1093,9 @@ pub mod query_client {
         }
         /// DelegatorUnbondingDelegations queries all unbonding delegations of a given
         /// delegator address.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         pub async fn delegator_unbonding_delegations(
             &mut self,
             request: impl tonic::IntoRequest<
@@ -1044,6 +1128,9 @@ pub mod query_client {
             self.inner.unary(req, path, codec).await
         }
         /// Redelegations queries redelegations of given address.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         pub async fn redelegations(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryRedelegationsRequest>,
@@ -1072,6 +1159,9 @@ pub mod query_client {
         }
         /// DelegatorValidators queries all validators info for given delegator
         /// address.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         pub async fn delegator_validators(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryDelegatorValidatorsRequest>,
@@ -1217,6 +1307,10 @@ pub struct MsgCreateValidator {
     pub commission: ::core::option::Option<CommissionRates>,
     #[prost(string, tag = "3")]
     pub min_self_delegation: ::prost::alloc::string::String,
+    /// Deprecated: Use of Delegator Address in MsgCreateValidator is deprecated.
+    /// The validator address bytes and delegator address bytes refer to the same account while creating validator (defer
+    /// only in bech32 notation).
+    #[deprecated]
     #[prost(string, tag = "4")]
     pub delegator_address: ::prost::alloc::string::String,
     #[prost(string, tag = "5")]
@@ -1293,10 +1387,15 @@ pub struct MsgUndelegate {
     pub amount: ::core::option::Option<super::super::base::v1beta1::Coin>,
 }
 /// MsgUndelegateResponse defines the Msg/Undelegate response type.
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgUndelegateResponse {
     #[prost(message, optional, tag = "1")]
     pub completion_time: ::core::option::Option<::prost_types::Timestamp>,
+    /// amount returns the amount of undelegated coins
+    ///
+    /// Since: cosmos-sdk 0.50
+    #[prost(message, optional, tag = "2")]
+    pub amount: ::core::option::Option<super::super::base::v1beta1::Coin>,
 }
 /// MsgCancelUnbondingDelegation defines the SDK message for performing a cancel unbonding delegation for delegator
 ///
@@ -1319,6 +1418,26 @@ pub struct MsgCancelUnbondingDelegation {
 /// Since: cosmos-sdk 0.46
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgCancelUnbondingDelegationResponse {}
+/// MsgUpdateParams is the Msg/UpdateParams request type.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParams {
+    /// authority is the address that controls the module (defaults to x/gov unless overwritten).
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// params defines the x/staking parameters to update.
+    ///
+    /// NOTE: All parameters must be supplied.
+    #[prost(message, optional, tag = "2")]
+    pub params: ::core::option::Option<Params>,
+}
+/// MsgUpdateParamsResponse defines the response structure for executing a
+/// MsgUpdateParams message.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParamsResponse {}
 /// Generated client implementations.
 pub mod msg_client {
     #![allow(
@@ -1574,6 +1693,33 @@ pub mod msg_client {
                         "CancelUnbondingDelegation",
                     ),
                 );
+            self.inner.unary(req, path, codec).await
+        }
+        /// UpdateParams defines an operation for updating the x/staking module
+        /// parameters.
+        /// Since: cosmos-sdk 0.47
+        pub async fn update_params(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgUpdateParams>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgUpdateParamsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.staking.v1beta1.Msg/UpdateParams",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.staking.v1beta1.Msg", "UpdateParams"));
             self.inner.unary(req, path, codec).await
         }
     }

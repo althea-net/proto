@@ -7,10 +7,22 @@
 pub struct SendAuthorization {
     #[prost(message, repeated, tag = "1")]
     pub spend_limit: ::prost::alloc::vec::Vec<super::super::base::v1beta1::Coin>,
+    /// allow_list specifies an optional list of addresses to whom the grantee can send tokens on behalf of the
+    /// granter. If omitted, any recipient is allowed.
+    ///
+    /// Since: cosmos-sdk 0.47
+    #[prost(string, repeated, tag = "2")]
+    pub allow_list: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 /// Params defines the parameters for the bank module.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
+    /// Deprecated: Use of SendEnabled in params is deprecated.
+    /// For genesis, use the newly added send_enabled field in the genesis object.
+    /// Storage, lookup, and manipulation of this information is now in the keeper.
+    ///
+    /// As of cosmos-sdk 0.47, this only exists for backwards compatibility of genesis files.
+    #[deprecated]
     #[prost(message, repeated, tag = "1")]
     pub send_enabled: ::prost::alloc::vec::Vec<SendEnabled>,
     #[prost(bool, tag = "2")]
@@ -109,7 +121,7 @@ pub struct Metadata {
 /// GenesisState defines the bank module's genesis state.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
-    /// params defines all the paramaters of the module.
+    /// params defines all the parameters of the module.
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
     /// balances is an array containing the balances of all the accounts.
@@ -119,9 +131,14 @@ pub struct GenesisState {
     /// balances. Otherwise, it will be used to validate that the sum of the balances equals this amount.
     #[prost(message, repeated, tag = "3")]
     pub supply: ::prost::alloc::vec::Vec<super::super::base::v1beta1::Coin>,
-    /// denom_metadata defines the metadata of the differents coins.
+    /// denom_metadata defines the metadata of the different coins.
     #[prost(message, repeated, tag = "4")]
     pub denom_metadata: ::prost::alloc::vec::Vec<Metadata>,
+    /// send_enabled defines the denoms where send is enabled or disabled.
+    ///
+    /// Since: cosmos-sdk 0.47
+    #[prost(message, repeated, tag = "5")]
+    pub send_enabled: ::prost::alloc::vec::Vec<SendEnabled>,
 }
 /// Balance defines an account address and balance pair used in the bank module's
 /// genesis state.
@@ -162,6 +179,11 @@ pub struct QueryAllBalancesRequest {
     pub pagination: ::core::option::Option<
         super::super::base::query::v1beta1::PageRequest,
     >,
+    /// resolve_denom is the flag to resolve the denom into a human-readable form from the metadata.
+    ///
+    /// Since: cosmos-sdk 0.50
+    #[prost(bool, tag = "3")]
+    pub resolve_denom: bool,
 }
 /// QueryAllBalancesResponse is the response type for the Query/AllBalances RPC
 /// method.
@@ -205,6 +227,29 @@ pub struct QuerySpendableBalancesResponse {
     pub pagination: ::core::option::Option<
         super::super::base::query::v1beta1::PageResponse,
     >,
+}
+/// QuerySpendableBalanceByDenomRequest defines the gRPC request structure for
+/// querying an account's spendable balance for a specific denom.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QuerySpendableBalanceByDenomRequest {
+    /// address is the address to query balances for.
+    #[prost(string, tag = "1")]
+    pub address: ::prost::alloc::string::String,
+    /// denom is the coin denom to query balances for.
+    #[prost(string, tag = "2")]
+    pub denom: ::prost::alloc::string::String,
+}
+/// QuerySpendableBalanceByDenomResponse defines the gRPC response structure for
+/// querying an account's spendable balance for a specific denom.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QuerySpendableBalanceByDenomResponse {
+    /// balance is the balance of the coin.
+    #[prost(message, optional, tag = "1")]
+    pub balance: ::core::option::Option<super::super::base::v1beta1::Coin>,
 }
 /// QueryTotalSupplyRequest is the request type for the Query/TotalSupply RPC
 /// method.
@@ -253,6 +298,7 @@ pub struct QueryParamsRequest {}
 /// QueryParamsResponse defines the response type for querying x/bank parameters.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsResponse {
+    /// params provides the parameters of the bank module.
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
 }
@@ -289,6 +335,22 @@ pub struct QueryDenomMetadataRequest {
 /// method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryDenomMetadataResponse {
+    /// metadata describes and provides all the client information for the requested token.
+    #[prost(message, optional, tag = "1")]
+    pub metadata: ::core::option::Option<Metadata>,
+}
+/// QueryDenomMetadataByQueryStringRequest is the request type for the Query/DenomMetadata RPC method.
+/// Identical with QueryDenomMetadataRequest but receives denom as query string.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryDenomMetadataByQueryStringRequest {
+    /// denom is the coin denom to query the metadata for.
+    #[prost(string, tag = "1")]
+    pub denom: ::prost::alloc::string::String,
+}
+/// QueryDenomMetadataByQueryStringResponse is the response type for the Query/DenomMetadata RPC
+/// method. Identical with QueryDenomMetadataResponse but receives denom as query string in request.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryDenomMetadataByQueryStringResponse {
     /// metadata describes and provides all the client information for the requested token.
     #[prost(message, optional, tag = "1")]
     pub metadata: ::core::option::Option<Metadata>,
@@ -330,6 +392,64 @@ pub struct QueryDenomOwnersResponse {
     pub denom_owners: ::prost::alloc::vec::Vec<DenomOwner>,
     /// pagination defines the pagination in the response.
     #[prost(message, optional, tag = "2")]
+    pub pagination: ::core::option::Option<
+        super::super::base::query::v1beta1::PageResponse,
+    >,
+}
+/// QueryDenomOwnersByQueryRequest defines the request type for the DenomOwnersByQuery RPC query,
+/// which queries for a paginated set of all account holders of a particular
+/// denomination.
+///
+/// Since: cosmos-sdk 0.50.3
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryDenomOwnersByQueryRequest {
+    /// denom defines the coin denomination to query all account holders for.
+    #[prost(string, tag = "1")]
+    pub denom: ::prost::alloc::string::String,
+    /// pagination defines an optional pagination for the request.
+    #[prost(message, optional, tag = "2")]
+    pub pagination: ::core::option::Option<
+        super::super::base::query::v1beta1::PageRequest,
+    >,
+}
+/// QueryDenomOwnersByQueryResponse defines the RPC response of a DenomOwnersByQuery RPC query.
+///
+/// Since: cosmos-sdk 0.50.3
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryDenomOwnersByQueryResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub denom_owners: ::prost::alloc::vec::Vec<DenomOwner>,
+    /// pagination defines the pagination in the response.
+    #[prost(message, optional, tag = "2")]
+    pub pagination: ::core::option::Option<
+        super::super::base::query::v1beta1::PageResponse,
+    >,
+}
+/// QuerySendEnabledRequest defines the RPC request for looking up SendEnabled entries.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QuerySendEnabledRequest {
+    /// denoms is the specific denoms you want look up. Leave empty to get all entries.
+    #[prost(string, repeated, tag = "1")]
+    pub denoms: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// pagination defines an optional pagination for the request. This field is
+    /// only read if the denoms field is empty.
+    #[prost(message, optional, tag = "99")]
+    pub pagination: ::core::option::Option<
+        super::super::base::query::v1beta1::PageRequest,
+    >,
+}
+/// QuerySendEnabledResponse defines the RPC response of a SendEnable query.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QuerySendEnabledResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub send_enabled: ::prost::alloc::vec::Vec<SendEnabled>,
+    /// pagination defines the pagination in the response. This field is only
+    /// populated if the denoms field in the request is empty.
+    #[prost(message, optional, tag = "99")]
     pub pagination: ::core::option::Option<
         super::super::base::query::v1beta1::PageResponse,
     >,
@@ -452,6 +572,9 @@ pub mod query_client {
             self.inner.unary(req, path, codec).await
         }
         /// AllBalances queries the balance of all coins for a single account.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         pub async fn all_balances(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryAllBalancesRequest>,
@@ -476,8 +599,11 @@ pub mod query_client {
                 .insert(GrpcMethod::new("cosmos.bank.v1beta1.Query", "AllBalances"));
             self.inner.unary(req, path, codec).await
         }
-        /// SpendableBalances queries the spenable balance of all coins for a single
+        /// SpendableBalances queries the spendable balance of all coins for a single
         /// account.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         ///
         /// Since: cosmos-sdk 0.46
         pub async fn spendable_balances(
@@ -506,7 +632,46 @@ pub mod query_client {
                 );
             self.inner.unary(req, path, codec).await
         }
+        /// SpendableBalanceByDenom queries the spendable balance of a single denom for
+        /// a single account.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
+        ///
+        /// Since: cosmos-sdk 0.47
+        pub async fn spendable_balance_by_denom(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QuerySpendableBalanceByDenomRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QuerySpendableBalanceByDenomResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.bank.v1beta1.Query/SpendableBalanceByDenom",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "cosmos.bank.v1beta1.Query",
+                        "SpendableBalanceByDenom",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
         /// TotalSupply queries the total supply of all coins.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         pub async fn total_supply(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryTotalSupplyRequest>,
@@ -532,6 +697,9 @@ pub mod query_client {
             self.inner.unary(req, path, codec).await
         }
         /// SupplyOf queries the supply of a single coin.
+        ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
         pub async fn supply_of(
             &mut self,
             request: impl tonic::IntoRequest<super::QuerySupplyOfRequest>,
@@ -581,7 +749,7 @@ pub mod query_client {
                 .insert(GrpcMethod::new("cosmos.bank.v1beta1.Query", "Params"));
             self.inner.unary(req, path, codec).await
         }
-        /// DenomsMetadata queries the client metadata of a given coin denomination.
+        /// DenomMetadata queries the client metadata of a given coin denomination.
         pub async fn denom_metadata(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryDenomMetadataRequest>,
@@ -604,6 +772,38 @@ pub mod query_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("cosmos.bank.v1beta1.Query", "DenomMetadata"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// DenomMetadataByQueryString queries the client metadata of a given coin denomination.
+        pub async fn denom_metadata_by_query_string(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::QueryDenomMetadataByQueryStringRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryDenomMetadataByQueryStringResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.bank.v1beta1.Query/DenomMetadataByQueryString",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "cosmos.bank.v1beta1.Query",
+                        "DenomMetadataByQueryString",
+                    ),
+                );
             self.inner.unary(req, path, codec).await
         }
         /// DenomsMetadata queries the client metadata for all registered coin
@@ -635,6 +835,9 @@ pub mod query_client {
         /// DenomOwners queries for all account addresses that own a particular token
         /// denomination.
         ///
+        /// When called from another module, this query might consume a high amount of
+        /// gas if the pagination field is incorrectly set.
+        ///
         /// Since: cosmos-sdk 0.46
         pub async fn denom_owners(
             &mut self,
@@ -660,6 +863,67 @@ pub mod query_client {
                 .insert(GrpcMethod::new("cosmos.bank.v1beta1.Query", "DenomOwners"));
             self.inner.unary(req, path, codec).await
         }
+        /// DenomOwnersByQuery queries for all account addresses that own a particular token
+        /// denomination.
+        ///
+        /// Since: cosmos-sdk 0.50.3
+        pub async fn denom_owners_by_query(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryDenomOwnersByQueryRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryDenomOwnersByQueryResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.bank.v1beta1.Query/DenomOwnersByQuery",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("cosmos.bank.v1beta1.Query", "DenomOwnersByQuery"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        /// SendEnabled queries for SendEnabled entries.
+        ///
+        /// This query only returns denominations that have specific SendEnabled settings.
+        /// Any denomination that does not have a specific setting will use the default
+        /// params.default_send_enabled, and will not be returned by this query.
+        ///
+        /// Since: cosmos-sdk 0.47
+        pub async fn send_enabled(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QuerySendEnabledRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QuerySendEnabledResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.bank.v1beta1.Query/SendEnabled",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.bank.v1beta1.Query", "SendEnabled"));
+            self.inner.unary(req, path, codec).await
+        }
     }
 }
 /// MsgSend represents a message to send coins from one account to another.
@@ -678,6 +942,8 @@ pub struct MsgSendResponse {}
 /// MsgMultiSend represents an arbitrary multi-in, multi-out send message.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgMultiSend {
+    /// Inputs, despite being `repeated`, only allows one sender input. This is
+    /// checked in MsgMultiSend's ValidateBasic.
     #[prost(message, repeated, tag = "1")]
     pub inputs: ::prost::alloc::vec::Vec<Input>,
     #[prost(message, repeated, tag = "2")]
@@ -686,6 +952,53 @@ pub struct MsgMultiSend {
 /// MsgMultiSendResponse defines the Msg/MultiSend response type.
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgMultiSendResponse {}
+/// MsgUpdateParams is the Msg/UpdateParams request type.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParams {
+    /// authority is the address that controls the module (defaults to x/gov unless overwritten).
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// params defines the x/bank parameters to update.
+    ///
+    /// NOTE: All parameters must be supplied.
+    #[prost(message, optional, tag = "2")]
+    pub params: ::core::option::Option<Params>,
+}
+/// MsgUpdateParamsResponse defines the response structure for executing a
+/// MsgUpdateParams message.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParamsResponse {}
+/// MsgSetSendEnabled is the Msg/SetSendEnabled request type.
+///
+/// Only entries to add/update/delete need to be included.
+/// Existing SendEnabled entries that are not included in this
+/// message are left unchanged.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgSetSendEnabled {
+    /// authority is the address that controls the module.
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// send_enabled is the list of entries to add or update.
+    #[prost(message, repeated, tag = "2")]
+    pub send_enabled: ::prost::alloc::vec::Vec<SendEnabled>,
+    /// use_default_for is a list of denoms that should use the params.default_send_enabled value.
+    /// Denoms listed here will have their SendEnabled entries deleted.
+    /// If a denom is included that doesn't have a SendEnabled entry,
+    /// it will be ignored.
+    #[prost(string, repeated, tag = "3")]
+    pub use_default_for: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// MsgSetSendEnabledResponse defines the Msg/SetSendEnabled response type.
+///
+/// Since: cosmos-sdk 0.47
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgSetSendEnabledResponse {}
 /// Generated client implementations.
 pub mod msg_client {
     #![allow(
@@ -826,6 +1139,64 @@ pub mod msg_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("cosmos.bank.v1beta1.Msg", "MultiSend"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// UpdateParams defines a governance operation for updating the x/bank module parameters.
+        /// The authority is defined in the keeper.
+        ///
+        /// Since: cosmos-sdk 0.47
+        pub async fn update_params(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgUpdateParams>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgUpdateParamsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.bank.v1beta1.Msg/UpdateParams",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.bank.v1beta1.Msg", "UpdateParams"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// SetSendEnabled is a governance operation for setting the SendEnabled flag
+        /// on any number of Denoms. Only the entries to add or update should be
+        /// included. Entries that already exist in the store, but that aren't
+        /// included in this message, will be left unchanged.
+        ///
+        /// Since: cosmos-sdk 0.47
+        pub async fn set_send_enabled(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgSetSendEnabled>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgSetSendEnabledResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.bank.v1beta1.Msg/SetSendEnabled",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("cosmos.bank.v1beta1.Msg", "SetSendEnabled"));
             self.inner.unary(req, path, codec).await
         }
     }
