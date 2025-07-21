@@ -42,7 +42,6 @@ pub const ALTHEA_ROOT: &str = "../althea-L1/";
 
 pub const COSMOS_SDK_ROOT: &str = "../cosmos-sdk/";
 pub const BECH32IBC_ROOT: &str = "../bech32-ibc/";
-pub const TENDERMINT_ROOT: &str = "../tendermint/";
 pub const IBC_ROOT: &str = "../ibc-go/";
 pub const GOOGLE_COMMON_ROOT: &str = "../common_proto/";
 
@@ -93,7 +92,7 @@ fn main() {
         RootDirs {
             cosmos: COSMOS_SDK_ROOT.to_string(),
             bech32ibc: BECH32IBC_ROOT.to_string(),
-            tendermint: TENDERMINT_ROOT.to_string(),
+            tendermint: COSMOS_SDK_ROOT.to_string(),
             ibc: IBC_ROOT.to_string(),
         },
         TMP_PATH,
