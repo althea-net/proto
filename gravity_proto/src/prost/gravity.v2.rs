@@ -207,6 +207,26 @@ pub mod query_client {
         }
     }
 }
+/// MsgUpdateParamsProposal
+/// This message is used by the new x/gov v1 proposal system, it contains an authority
+/// and a collection of params which may be updated in the proposal.
+/// Only the provided params will be updated, and they will all be validated before execution.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParamsProposal {
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "2")]
+    pub param_updates: ::prost::alloc::vec::Vec<Param>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Param {
+    #[prost(string, tag = "1")]
+    pub key: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub value: ::prost::alloc::string::String,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParamsProposalResponse {}
 /// MsgIBCMetadataProposal
 /// This message is used by the new x/gov v1 proposal system, it contains an authority
 /// and the previous type used for proposals
@@ -346,6 +366,30 @@ pub mod msg_client {
         pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
+        }
+        pub async fn update_params_proposal(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgUpdateParamsProposal>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgUpdateParamsProposalResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/gravity.v2.Msg/UpdateParamsProposal",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("gravity.v2.Msg", "UpdateParamsProposal"));
+            self.inner.unary(req, path, codec).await
         }
         pub async fn ibc_metadata_proposal(
             &mut self,

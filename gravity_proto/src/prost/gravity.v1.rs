@@ -2,18 +2,18 @@
 /// Attestation is an aggregate of `claims` that eventually becomes `observed` by
 /// all orchestrators
 /// EVENT_NONCE:
-/// EventNonce a nonce provided by the gravity contract that is unique per event fired
-/// These event nonces must be relayed in order. This is a correctness issue,
-/// if relaying out of order transaction replay attacks become possible
+/// EventNonce a nonce provided by the gravity contract that is unique per event
+/// fired These event nonces must be relayed in order. This is a correctness
+/// issue, if relaying out of order transaction replay attacks become possible
 /// OBSERVED:
 /// Observed indicates that >67% of validators have attested to the event,
 /// and that the event should be executed by the gravity state machine
 ///
-/// The actual content of the claims is passed in with the transaction making the claim
-/// and then passed through the call stack alongside the attestation while it is processed
-/// the key in which the attestation is stored is keyed on the exact details of the claim
-/// but there is no reason to store those exact details becuause the next message sender
-/// will kindly provide you with them.
+/// The actual content of the claims is passed in with the transaction making the
+/// claim and then passed through the call stack alongside the attestation while
+/// it is processed the key in which the attestation is stored is keyed on the
+/// exact details of the claim but there is no reason to store those exact
+/// details becuause the next message sender will kindly provide you with them.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Attestation {
     #[prost(bool, tag = "1")]
@@ -29,7 +29,8 @@ pub struct Attestation {
 /// CONTRACT:
 /// The contract address on ETH of the token, this could be a Cosmos
 /// originated token, if so it will be the ERC20 address of the representation
-/// (note: developers should look up the token symbol using the address on ETH to display for UI)
+/// (note: developers should look up the token symbol using the address on ETH to
+/// display for UI)
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Erc20Token {
     #[prost(string, tag = "1")]
@@ -314,12 +315,15 @@ pub struct Erc20ToDenom {
     #[prost(string, tag = "2")]
     pub denom: ::prost::alloc::string::String,
 }
-/// UnhaltBridgeProposal defines a custom governance proposal useful for restoring
-/// the bridge after a oracle disagreement. Once this proposal is passed bridge state will roll back events
-/// to the nonce provided in target_nonce if and only if those events have not yet been observed (executed on the Cosmos chain). This allows for easy
-/// handling of cases where for example an Ethereum hardfork has occured and more than 1/3 of the vlaidtor set
-/// disagrees with the rest. Normally this would require a chain halt, manual genesis editing and restar to resolve
-/// with this feature a governance proposal can be used instead
+/// UnhaltBridgeProposal defines a custom governance proposal useful for
+/// restoring the bridge after a oracle disagreement. Once this proposal is
+/// passed bridge state will roll back events to the nonce provided in
+/// target_nonce if and only if those events have not yet been observed (executed
+/// on the Cosmos chain). This allows for easy handling of cases where for
+/// example an Ethereum hardfork has occured and more than 1/3 of the vlaidtor
+/// set disagrees with the rest. Normally this would require a chain halt, manual
+/// genesis editing and restar to resolve with this feature a governance proposal
+/// can be used instead
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UnhaltBridgeProposal {
     #[prost(string, tag = "1")]
@@ -329,10 +333,12 @@ pub struct UnhaltBridgeProposal {
     #[prost(uint64, tag = "4")]
     pub target_nonce: u64,
 }
-/// AirdropProposal defines a custom governance proposal type that allows an airdrop to occur in a decentralized
-/// fashion. A list of destination addresses and an amount per airdrop recipient is provided. The funds for this
-/// airdrop are removed from the Community Pool, if the community pool does not have sufficient funding to perform
-/// the airdrop to all provided recipients nothing will occur
+/// AirdropProposal defines a custom governance proposal type that allows an
+/// airdrop to occur in a decentralized fashion. A list of destination addresses
+/// and an amount per airdrop recipient is provided. The funds for this airdrop
+/// are removed from the Community Pool, if the community pool does not have
+/// sufficient funding to perform the airdrop to all provided recipients nothing
+/// will occur
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AirdropProposal {
     #[prost(string, tag = "1")]
@@ -346,15 +352,14 @@ pub struct AirdropProposal {
     #[prost(uint64, repeated, tag = "5")]
     pub amounts: ::prost::alloc::vec::Vec<u64>,
 }
-/// IBCMetadataProposal defines a custom governance proposal type that allows governance to set the
-/// metadata for an IBC token, this will allow Gravity to deploy an ERC20 representing this token on
-/// Ethereum
-/// Name: the token name
+/// IBCMetadataProposal defines a custom governance proposal type that allows
+/// governance to set the metadata for an IBC token, this will allow Gravity to
+/// deploy an ERC20 representing this token on Ethereum Name: the token name
 /// Symbol: the token symbol
-/// Description: the token description, not sent to ETH at all, only used on Cosmos
-/// Display: the token display name (only used on Cosmos to decide ERC20 Decimals)
-/// Deicmals: the decimals for the display unit
-/// ibc_denom is the denom of the token in question on this chain
+/// Description: the token description, not sent to ETH at all, only used on
+/// Cosmos Display: the token display name (only used on Cosmos to decide ERC20
+/// Decimals) Deicmals: the decimals for the display unit ibc_denom is the denom
+/// of the token in question on this chain
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct IbcMetadataProposal {
     #[prost(string, tag = "1")]
@@ -366,20 +371,26 @@ pub struct IbcMetadataProposal {
     #[prost(string, tag = "4")]
     pub ibc_denom: ::prost::alloc::string::String,
 }
-/// PendingIbcAutoForward represents a SendToCosmos transaction with a foreign CosmosReceiver which will be added to the
-/// PendingIbcAutoForward queue in attestation_handler and sent over IBC on some submission of a MsgExecuteIbcAutoForwards
+/// PendingIbcAutoForward represents a SendToCosmos transaction with a foreign
+/// CosmosReceiver which will be added to the PendingIbcAutoForward queue in
+/// attestation_handler and sent over IBC on some submission of a
+/// MsgExecuteIbcAutoForwards
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PendingIbcAutoForward {
-    /// the destination address. sdk.AccAddress does not preserve foreign prefixes
+    /// the destination address. sdk.AccAddress does
     #[prost(string, tag = "1")]
     pub foreign_receiver: ::prost::alloc::string::String,
-    /// the token sent from ethereum to the ibc-enabled chain over `IbcChannel`
+    /// not preserve foreign prefixes
+    ///
+    /// the token sent from ethereum to the
     #[prost(message, optional, tag = "2")]
     pub token: ::core::option::Option<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
+    /// ibc-enabled chain over `IbcChannel`
+    ///
     /// the IBC channel to send `Amount` over via ibc-transfer module
     #[prost(string, tag = "3")]
     pub ibc_channel: ::prost::alloc::string::String,
-    /// the EventNonce from the MsgSendToCosmosClaim, used for ordering the queue
+    /// the EventNonce from the MsgSendToCosmosClaim, used
     #[prost(uint64, tag = "4")]
     pub event_nonce: u64,
 }
@@ -394,8 +405,8 @@ pub struct PendingIbcAutoForward {
 /// The orchestrator field is a cosmos1... string  (i.e. sdk.AccAddress) that
 /// references the key that is being delegated to
 /// ETH_ADDRESS
-/// This is a hex encoded 0x Ethereum public key that will be used by this validator
-/// on Ethereum
+/// This is a hex encoded 0x Ethereum public key that will be used by this
+/// validator on Ethereum
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSetOrchestratorAddress {
     #[prost(string, tag = "1")]
@@ -556,8 +567,9 @@ pub struct MsgSendToCosmosClaim {
 pub struct MsgSendToCosmosClaimResponse {}
 /// MsgExecuteIbcAutoForwards
 /// Prompts the forwarding of Pending IBC Auto-Forwards in the queue
-/// The Pending forwards will be executed in order of their original SendToCosmos.EventNonce
-/// The funds in the queue will be sent to a local gravity-prefixed address if IBC transfer is not possible
+/// The Pending forwards will be executed in order of their original
+/// SendToCosmos.EventNonce The funds in the queue will be sent to a local
+/// gravity-prefixed address if IBC transfer is not possible
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgExecuteIbcAutoForwards {
     /// How many queued forwards to clear, be careful about gas limits
@@ -1206,46 +1218,91 @@ pub mod msg_client {
         }
     }
 }
-/// The slashing fractions for the various gravity related slashing conditions. The first three
-/// refer to not submitting a particular message, the third for submitting a different claim
-/// for the same Ethereum event
+/// IDSet represents a set of IDs
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct IdSet {
+    #[prost(uint64, repeated, tag = "1")]
+    pub ids: ::prost::alloc::vec::Vec<u64>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct BatchFees {
+    #[prost(string, tag = "1")]
+    pub token: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub total_fees: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "3")]
+    pub tx_count: u64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EventWithdrawalReceived {
+    #[prost(string, tag = "1")]
+    pub bridge_contract: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub bridge_chain_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub outgoing_tx_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub nonce: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EventWithdrawCanceled {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub tx_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub bridge_contract: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub bridge_chain_id: ::prost::alloc::string::String,
+}
+/// The slashing fractions for the various gravity related slashing conditions.
+/// The first three refer to not submitting a particular message, the third for
+/// submitting a different claim for the same Ethereum event
 ///
 /// unbond_slashing_valsets_window
 ///
-/// The unbond slashing valsets window is used to determine how many blocks after starting to unbond
-/// a validator needs to continue signing blocks. The goal of this paramater is that when a validator leaves
-/// the set, if their leaving creates enough change in the validator set to justify an update they will sign
-/// a validator set update for the Ethereum bridge that does not include themselves. Allowing us to remove them
-/// from the Ethereum bridge and replace them with the new set gracefully.
+/// The unbond slashing valsets window is used to determine how many blocks after
+/// starting to unbond a validator needs to continue signing blocks. The goal of
+/// this paramater is that when a validator leaves the set, if their leaving
+/// creates enough change in the validator set to justify an update they will
+/// sign a validator set update for the Ethereum bridge that does not include
+/// themselves. Allowing us to remove them from the Ethereum bridge and replace
+/// them with the new set gracefully.
 ///
 /// valset_reward
 ///
-/// These parameters allow for the bridge oracle to resolve a fork on the Ethereum chain without halting
-/// the chain. Once set reset bridge state will roll back events to the nonce provided in reset_bridge_nonce
-/// if and only if those events have not yet been observed (executed on the Cosmos chain). This allows for easy
-/// handling of cases where for example an Ethereum hardfork has occured and more than 1/3 of the vlaidtor set
-/// disagrees with the rest. Normally this would require a chain halt, manual genesis editing and restar to resolve
-/// with this feature a governance proposal can be used instead
+/// These parameters allow for the bridge oracle to resolve a fork on the
+/// Ethereum chain without halting the chain. Once set reset bridge state will
+/// roll back events to the nonce provided in reset_bridge_nonce if and only if
+/// those events have not yet been observed (executed on the Cosmos chain). This
+/// allows for easy handling of cases where for example an Ethereum hardfork has
+/// occured and more than 1/3 of the vlaidtor set disagrees with the rest.
+/// Normally this would require a chain halt, manual genesis editing and restar
+/// to resolve with this feature a governance proposal can be used instead
 ///
 /// bridge_active
 ///
-/// This boolean flag can be used by governance to temporarily halt the bridge due to a vulnerability or other issue
-/// In this context halting the bridge means prevent the execution of any oracle events from Ethereum and preventing
+/// This boolean flag can be used by governance to temporarily halt the bridge
+/// due to a vulnerability or other issue In this context halting the bridge
+/// means prevent the execution of any oracle events from Ethereum and preventing
 /// the creation of new batches that may be relayed to Ethereum.
 /// This does not prevent the creation of validator sets
-/// or slashing for not submitting validator set signatures as either of these might allow key signers to leave the validator
-/// set and steal funds on Ethereum without consequence.
-/// The practical outcome of this flag being set to 'false' is that deposits from Ethereum will not show up and withdraws from
+/// or slashing for not submitting validator set signatures as either of these
+/// might allow key signers to leave the validator set and steal funds on
+/// Ethereum without consequence. The practical outcome of this flag being set to
+/// 'false' is that deposits from Ethereum will not show up and withdraws from
 /// Cosmos will not execute on Ethereum.
 ///
 /// min_chain_fee_basis_points
 ///
-/// The minimum SendToEth `chain_fee` amount, in terms of basis points. e.g. 10% fee = 1000, and 0.02% fee = 2
+/// The minimum SendToEth `chain_fee` amount, in terms of basis points. e.g. 10%
+/// fee = 1000, and 0.02% fee = 2
 ///
 /// chain_fee_auction_pool_fraction
 ///
-/// Specifies what fraction of the SendToEth `chain_fee` amount should go to the auction pool.
-/// e.g. "0.5" gives a 50% auction pool / staker split while "0.9" would cause 90% of the fee to go to the pool
+/// Specifies what fraction of the SendToEth `chain_fee` amount should go to the
+/// auction pool. e.g. "0.5" gives a 50% auction pool / staker split while "0.9"
+/// would cause 90% of the fee to go to the pool
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
     #[prost(string, tag = "1")]
@@ -1291,7 +1348,8 @@ pub struct Params {
     #[prost(string, tag = "21")]
     pub chain_fee_auction_pool_fraction: ::prost::alloc::string::String,
 }
-/// GenesisState struct, containing all persistant data required by the Gravity module
+/// GenesisState struct, containing all persistant data required by the Gravity
+/// module
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
     #[prost(message, optional, tag = "1")]
@@ -1321,7 +1379,8 @@ pub struct GenesisState {
     #[prost(message, repeated, tag = "13")]
     pub pending_ibc_auto_forwards: ::prost::alloc::vec::Vec<PendingIbcAutoForward>,
 }
-/// GravityCounters contains the many noces and counters required to maintain the bridge state in the genesis
+/// GravityCounters contains the many noces and counters required to maintain the
+/// bridge state in the genesis
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct GravityNonces {
     /// the nonce of the last generated validator set
@@ -1349,43 +1408,6 @@ pub struct GravityNonces {
     /// during chain upgrades
     #[prost(uint64, tag = "7")]
     pub last_batch_id: u64,
-}
-/// IDSet represents a set of IDs
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct IdSet {
-    #[prost(uint64, repeated, tag = "1")]
-    pub ids: ::prost::alloc::vec::Vec<u64>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct BatchFees {
-    #[prost(string, tag = "1")]
-    pub token: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub total_fees: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "3")]
-    pub tx_count: u64,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventWithdrawalReceived {
-    #[prost(string, tag = "1")]
-    pub bridge_contract: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub bridge_chain_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub outgoing_tx_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub nonce: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventWithdrawCanceled {
-    #[prost(string, tag = "1")]
-    pub sender: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub tx_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub bridge_contract: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub bridge_chain_id: ::prost::alloc::string::String,
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
@@ -1561,39 +1583,41 @@ pub struct QueryDenomToErc20Response {
     #[prost(bool, tag = "2")]
     pub cosmos_originated: bool,
 }
-/// QueryLastObservedEthBlockRequest defines the request for getting the height of the
-/// last applied Ethereum Event on the bridge. This is expected to lag the actual
-/// Ethereum block height significantly due to 1. Ethereum Finality and
+/// QueryLastObservedEthBlockRequest defines the request for getting the height
+/// of the last applied Ethereum Event on the bridge. This is expected to lag the
+/// actual Ethereum block height significantly due to 1. Ethereum Finality and
 ///   2. Consensus mirroring the state on Ethereum
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct QueryLastObservedEthBlockRequest {
-    /// indicates whether to search for store data using the old Gravity v1 key "LastObservedEthereumBlockHeightKey"
-    /// Note that queries before the Mercury upgrade at height 1282013 must set this to true
+    /// indicates whether to search for store data using the old Gravity v1 key
+    /// "LastObservedEthereumBlockHeightKey" Note that queries before the Mercury
+    /// upgrade at height 1282013 must set this to true
     #[prost(bool, tag = "1")]
     pub use_v1_key: bool,
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct QueryLastObservedEthBlockResponse {
-    /// a response of 0 indicates that no Ethereum events have been observed, and thus
-    /// the bridge is inactive
+    /// a response of 0 indicates that no Ethereum events have been observed, and
+    /// thus the bridge is inactive
     #[prost(uint64, tag = "1")]
     pub block: u64,
 }
-/// QueryLastObservedEthNonceRequest defines the request for getting the event nonce
-/// of the last applied Ethereum Event on the bridge.
-/// Note that this is likely to lag the last executed event a little
-/// due to 1. Ethereum Finality and 2. Consensus mirroring the Ethereum state
+/// QueryLastObservedEthNonceRequest defines the request for getting the event
+/// nonce of the last applied Ethereum Event on the bridge. Note that this is
+/// likely to lag the last executed event a little due to 1. Ethereum Finality
+/// and 2. Consensus mirroring the Ethereum state
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct QueryLastObservedEthNonceRequest {
-    /// indicates whether to search for store data using the old Gravity v1 key "LastObservedEventNonceKey"
-    /// Note that queries before the Mercury upgrade at height 1282013 must set this to true
+    /// indicates whether to search for store data using the old Gravity v1 key
+    /// "LastObservedEventNonceKey" Note that queries before the Mercury upgrade at
+    /// height 1282013 must set this to true
     #[prost(bool, tag = "1")]
     pub use_v1_key: bool,
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct QueryLastObservedEthNonceResponse {
-    /// a response of 0 indicates that no Ethereum events have been observed, and thus
-    /// the bridge is inactive
+    /// a response of 0 indicates that no Ethereum events have been observed, and
+    /// thus the bridge is inactive
     #[prost(uint64, tag = "1")]
     pub nonce: u64,
 }
@@ -1623,8 +1647,9 @@ pub struct QueryAttestationsRequest {
     /// height allows filtering attestations by Ethereum claim height.
     #[prost(uint64, tag = "5")]
     pub height: u64,
-    /// indicates whether to search for store data using the old Gravity v1 key "OracleAttestationKey"
-    /// Note that queries before the Mercury upgrade at height 1282013 must set this to true
+    /// indicates whether to search for store data using the old Gravity v1 key
+    /// "OracleAttestationKey" Note that queries before the Mercury upgrade at
+    /// height 1282013 must set this to true
     #[prost(bool, tag = "6")]
     pub use_v1_key: bool,
 }
@@ -1683,7 +1708,8 @@ pub struct QueryPendingSendToEthResponse {
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct QueryPendingIbcAutoForwards {
-    /// limit defines the number of pending forwards to return, in order of their SendToCosmos.EventNonce
+    /// limit defines the number of pending forwards to return, in order of their
+    /// SendToCosmos.EventNonce
     #[prost(uint64, tag = "1")]
     pub limit: u64,
 }
