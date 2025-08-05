@@ -382,7 +382,7 @@ checksum = "32085ea23f3234fc7846555e85283ba4de91e21016dc0455a16286d87a292d64"
 
 [[package]]
 name = "gravity_proto"
-version = "0.9.1"
+version = "0.9.2"
 dependencies = [
  "cosmos-sdk-proto-althea",
  "prost",
