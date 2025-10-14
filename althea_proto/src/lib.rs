@@ -6,6 +6,11 @@
 
 pub use cosmos_sdk_proto;
 pub mod althea {
+    pub mod erc20 {
+        pub mod v1 {
+            include!("prost/althea.erc20.v1.rs");
+        }
+    }
     pub mod lockup {
         pub mod v1 {
             include!("prost/althea.lockup.v1.rs");
@@ -43,11 +48,6 @@ pub mod canto {
     pub mod epochs {
         pub mod v1 {
             include!("prost/canto.epochs.v1.rs");
-        }
-    }
-    pub mod erc20 {
-        pub mod v1 {
-            include!("prost/canto.erc20.v1.rs");
         }
     }
     pub mod fees {

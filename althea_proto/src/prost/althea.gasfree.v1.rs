@@ -6,6 +6,21 @@ pub struct Params {
     /// AnteHandler, but will later be charged some form of fee in the Msg handler
     #[prost(string, repeated, tag = "1")]
     pub gas_free_message_types: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// Tokens usable with the gasfree erc20 module messages
+    /// these may be cosmos coins or ERC20 tokens which have been registered
+    /// with the erc20 module
+    /// The gasfree erc20 module messages are: MsgSendCoinToEVM, MsgSendERC20ToCosmos, and MsgSendERC20ToCosmosAndIBCTransfer
+    #[prost(string, repeated, tag = "2")]
+    pub gas_free_erc20_interop_tokens: ::prost::alloc::vec::Vec<
+        ::prost::alloc::string::String,
+    >,
+    /// The fee in basis points (hundredths of a percent) charged on the gasfree erc20
+    /// module messages. This fee is charged to pay for the gas costs of executing
+    /// the message on chain. For example, a value of 100 basis points means a
+    /// fee of 1% for each gasfree erc20 transaction.
+    /// The gasfree erc20 module messages are: MsgSendCoinToEVM, MsgSendERC20ToCosmos, and MsgSendERC20ToCosmosAndIBCTransfer
+    #[prost(uint64, tag = "3")]
+    pub gas_free_erc20_interop_fee_basis_points: u64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {

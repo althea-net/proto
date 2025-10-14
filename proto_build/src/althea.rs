@@ -53,6 +53,8 @@ fn compile_althea_protos(
     let root = root_path.to_path_buf();
 
     // Althea modules which should be compiled
+    let mut erc20_proto_dir = root.clone();
+    erc20_proto_dir.push("proto/althea/erc20/v1/");
     let mut lockup_proto_dir = root.clone();
     lockup_proto_dir.push("proto/althea/lockup/v1/");
     let mut microtx_proto_dir = root.clone();
@@ -79,6 +81,7 @@ fn compile_althea_protos(
 
     // Paths
     let proto_paths = [
+        erc20_proto_dir,
         lockup_proto_dir,
         microtx_proto_dir,
         gasfree_proto_dir,
