@@ -12,6 +12,11 @@ pub struct Params {
     pub verified_native_dex_address: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub verified_croc_policy_address: ::prost::alloc::string::String,
+    /// Addresses that can be called via ExecuteContractProposal
+    #[prost(string, repeated, tag = "3")]
+    pub whitelisted_contract_addresses: ::prost::alloc::vec::Vec<
+        ::prost::alloc::string::String,
+    >,
 }
 /// UpgradeProxyProposal will replace one of the nativedex callpath contracts (or install a new one)
 /// if passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 0, <ABI Encoded Bytes(21, <callpath_address>, <callpath_index>)>)
@@ -199,6 +204,30 @@ pub struct OpsMetadata {
     /// The ABI encoded bytes to pass to the opsResolution() call
     #[prost(bytes = "vec", tag = "2")]
     pub cmd_args: ::prost::alloc::vec::Vec<u8>,
+}
+/// ExecuteContractProposal will execute an arbitrary contract call from the nativedex module account.
+/// This allows governance to manage contracts owned by the nativedex module, but is restricted
+/// to whitelisted contract addresses to prevent abuse.
+/// If passes, calls the specified contract with the provided data from the nativedex module account.
+///
+/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, AS IT CAN MODIFY CONTRACTS OWNED BY THE NATIVEDEX MODULE
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ExecuteContractProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<ExecuteContractMetadata>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ExecuteContractMetadata {
+    /// The contract address to call (must be whitelisted in module params)
+    #[prost(string, tag = "1")]
+    pub contract_address: ::prost::alloc::string::String,
+    /// Hex-encoded calldata to send to the contract
+    #[prost(string, tag = "2")]
+    pub data: ::prost::alloc::string::String,
 }
 /// QueryParamsRequest is request type for the Query/Params RPC method.
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
