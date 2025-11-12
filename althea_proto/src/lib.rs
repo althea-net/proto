@@ -45,6 +45,11 @@ pub mod canto {
             include!("prost/canto.csr.v1.rs");
         }
     }
+    pub mod erc20 {
+        pub mod v1 {
+            include!("prost/canto.erc20.v1.rs");
+        }
+    }
     pub mod epochs {
         pub mod v1 {
             include!("prost/canto.epochs.v1.rs");
