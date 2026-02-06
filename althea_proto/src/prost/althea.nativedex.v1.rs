@@ -12,193 +12,11 @@ pub struct Params {
     pub verified_native_dex_address: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub verified_croc_policy_address: ::prost::alloc::string::String,
-}
-/// UpgradeProxyProposal will replace one of the nativedex callpath contracts (or install a new one)
-/// if passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 0, <ABI Encoded Bytes(21, <callpath_address>, <callpath_index>)>)
-///
-/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, AS IT CAN COMPLETELY BREAK THE DEX CONTRACT
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpgradeProxyProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub metadata: ::core::option::Option<UpgradeProxyMetadata>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpgradeProxyMetadata {
-    /// the address of the contract to install
-    #[prost(string, tag = "1")]
-    pub callpath_address: ::prost::alloc::string::String,
-    /// the callpath index to write to, see solidity-dex/contracts/mixins/StorageLayout.sol for the default values
-    #[prost(uint64, tag = "2")]
-    pub callpath_index: u64,
-}
-/// CollectTreasuryProposal will pay out protocol fees to the registered (and timelocked) `treasury_` account
-/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(40, <token_address>)>)
-///
-/// Note that by default the protocol fees will be set to zero, see the governance history or use CrocQuery with a pool
-/// to determine the current protocol take
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CollectTreasuryProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub metadata: ::core::option::Option<CollectTreasuryMetadata>,
-    /// must be true if the DEX is in safe mode, false otherwise
-    #[prost(bool, tag = "4")]
-    pub in_safe_mode: bool,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CollectTreasuryMetadata {
-    /// the ERC20 address to collect into the `treasury_` account, (0x0 for the native token)
-    #[prost(string, tag = "1")]
-    pub token_address: ::prost::alloc::string::String,
-}
-/// SetTreasuryProposal will change the `treasury_` address
-/// the treasury_ address will be restricted from receiving protocol fees for a period of time (stored in treasuryStartTime_)
-/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(41, <treasury_address>)>)
-///
-/// Note that by default the protocol fees will be set to zero, see the governance history or use CrocQuery with a pool
-/// to determine the current protocol take
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct SetTreasuryProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub metadata: ::core::option::Option<SetTreasuryMetadata>,
-    /// must be true if the DEX is in safe mode, false otherwise
-    #[prost(bool, tag = "4")]
-    pub in_safe_mode: bool,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct SetTreasuryMetadata {
-    /// the address to set `treasury_` to
-    #[prost(string, tag = "1")]
-    pub treasury_address: ::prost::alloc::string::String,
-}
-/// AuthorityTransferProposal will change the `authority_` address, which can be used to upgrade or remove the CrocPolicy
-/// contract (and therefore this module must be upgraded to work with the replacement, and configured as the new authority)
-/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(20, <auth_address>)>)
-///
-/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, AS IT CAN COMPLETELY DISABLE THE NATIVEDEX MODULE AND REMOVE STAKER AUTHORITY
-/// OVER THE DEX CONTRACT
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AuthorityTransferProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub metadata: ::core::option::Option<AuthorityTransferMetadata>,
-    /// must be true if the DEX is in safe mode, false otherwise
-    #[prost(bool, tag = "4")]
-    pub in_safe_mode: bool,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AuthorityTransferMetadata {
-    /// the address to set `authority_` to
-    #[prost(string, tag = "1")]
-    pub auth_address: ::prost::alloc::string::String,
-}
-/// HotPathOpenProposal will change the `hotPathOpen_` flag, which controls if users are able to call swap directly on the dex contract
-/// The primary purpose of this seems to be enabling upgradeability of the HotProxy contract, which would require users to switch
-/// to calling CrocSwapDex.userCmd(1, <ABI Encoded Args>) instead of CrocSwapDex.swap(<args>) so that they call the new code.
-/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(22, <open>)>)
-///
-/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, AS IT CAN BREAK INFLEXIBLE DEX USER INTERFACES
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct HotPathOpenProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub metadata: ::core::option::Option<HotPathOpenMetadata>,
-    /// must be true if the DEX is in safe mode, false otherwise
-    #[prost(bool, tag = "4")]
-    pub in_safe_mode: bool,
-}
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct HotPathOpenMetadata {
-    /// If true, users can call swap directly on the dex contract.
-    /// If false, they must call CrocSwapDex.userCmd(1, <ABI Encoded Args>)
-    #[prost(bool, tag = "1")]
-    pub open: bool,
-}
-/// SetSafeModeProposal will lock down the DEX for emergency changes. This can also be used by the emergency multisig to halt the DEX more quickly.
-/// When the DEX is in safe mode only a UpgradeProxy, CollectTreasury, SetTreasury, AuthorityTransfer, HotPathOpen, or SetSafeMode Proposal can be executed,
-/// and these proposals can only be executed under the SafeMode or Boot Proxy callpaths.
-/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(23, <lock_dex>)>)
-///
-/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, IT SHOULD ONLY BE USED TO DISABLE THE DEX OR RECOVER FROM DISABLES
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct SetSafeModeProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub metadata: ::core::option::Option<SetSafeModeMetadata>,
-    /// must be true if the DEX is already in safe mode, false otherwise
-    #[prost(bool, tag = "4")]
-    pub in_safe_mode: bool,
-}
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct SetSafeModeMetadata {
-    /// If true, the DEX will be disabled
-    #[prost(bool, tag = "1")]
-    pub lock_dex: bool,
-}
-/// TransferGovernanceProposal will update the governance role addresses on CrocPolicy.
-/// If passes, calls CrocPolicy.transferGovernance(<ops>, <nativedex module address>, <emergency>)
-///
-/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, THE OPS AND EMERGENCY ADDRESSES SHOULD BE CAREFULLY CHOSEN MULTISIGS
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct TransferGovernanceProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub metadata: ::core::option::Option<TransferGovernanceMetadata>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct TransferGovernanceMetadata {
-    /// The address to use for the Ops governance role, the least privileged role
-    #[prost(string, tag = "1")]
-    pub ops: ::prost::alloc::string::String,
-    /// The address to use for the Emergency governance role, which can halt the DEX or perform Ops functions
-    #[prost(string, tag = "2")]
-    pub emergency: ::prost::alloc::string::String,
-}
-/// OpsProposal will execute a non-sudo `protocolCmd()` call on the DEX via CrocPolicy.
-/// If passes, calls CrocPolicy.opsResolution (CrocSwapDex, <callpath>, <ABI Encoded Bytes(<cmd args>)>)
-///
-/// This proposal enables nativedex governance to perform everyday Ops functions on the DEX,
-/// and so the Ops or Emergency addresses could override any decisions made by this proposal.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct OpsProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub metadata: ::core::option::Option<OpsMetadata>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct OpsMetadata {
-    /// The callpath index to use, see solidity-dex/contracts/mixins/StorageLayout.sol for the default values
-    #[prost(uint64, tag = "1")]
-    pub callpath: u64,
-    /// The ABI encoded bytes to pass to the opsResolution() call
-    #[prost(bytes = "vec", tag = "2")]
-    pub cmd_args: ::prost::alloc::vec::Vec<u8>,
+    /// Addresses that can be called via ExecuteContractProposal
+    #[prost(string, repeated, tag = "3")]
+    pub whitelisted_contract_addresses: ::prost::alloc::vec::Vec<
+        ::prost::alloc::string::String,
+    >,
 }
 /// QueryParamsRequest is request type for the Query/Params RPC method.
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
@@ -422,4 +240,215 @@ pub mod msg_client {
             self
         }
     }
+}
+/// UpgradeProxyProposal will replace one of the nativedex callpath contracts (or install a new one)
+/// if passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 0, <ABI Encoded Bytes(21, <callpath_address>, <callpath_index>)>)
+///
+/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, AS IT CAN COMPLETELY BREAK THE DEX CONTRACT
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpgradeProxyProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<UpgradeProxyMetadata>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpgradeProxyMetadata {
+    /// the address of the contract to install
+    #[prost(string, tag = "1")]
+    pub callpath_address: ::prost::alloc::string::String,
+    /// the callpath index to write to, see solidity-dex/contracts/mixins/StorageLayout.sol for the default values
+    #[prost(uint64, tag = "2")]
+    pub callpath_index: u64,
+}
+/// CollectTreasuryProposal will pay out protocol fees to the registered (and timelocked) `treasury_` account
+/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(40, <token_address>)>)
+///
+/// Note that by default the protocol fees will be set to zero, see the governance history or use CrocQuery with a pool
+/// to determine the current protocol take
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CollectTreasuryProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<CollectTreasuryMetadata>,
+    /// must be true if the DEX is in safe mode, false otherwise
+    #[prost(bool, tag = "4")]
+    pub in_safe_mode: bool,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CollectTreasuryMetadata {
+    /// the ERC20 address to collect into the `treasury_` account, (0x0 for the native token)
+    #[prost(string, tag = "1")]
+    pub token_address: ::prost::alloc::string::String,
+}
+/// SetTreasuryProposal will change the `treasury_` address
+/// the treasury_ address will be restricted from receiving protocol fees for a period of time (stored in treasuryStartTime_)
+/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(41, <treasury_address>)>)
+///
+/// Note that by default the protocol fees will be set to zero, see the governance history or use CrocQuery with a pool
+/// to determine the current protocol take
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SetTreasuryProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<SetTreasuryMetadata>,
+    /// must be true if the DEX is in safe mode, false otherwise
+    #[prost(bool, tag = "4")]
+    pub in_safe_mode: bool,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SetTreasuryMetadata {
+    /// the address to set `treasury_` to
+    #[prost(string, tag = "1")]
+    pub treasury_address: ::prost::alloc::string::String,
+}
+/// AuthorityTransferProposal will change the `authority_` address, which can be used to upgrade or remove the CrocPolicy
+/// contract (and therefore this module must be upgraded to work with the replacement, and configured as the new authority)
+/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(20, <auth_address>)>)
+///
+/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, AS IT CAN COMPLETELY DISABLE THE NATIVEDEX MODULE AND REMOVE STAKER AUTHORITY
+/// OVER THE DEX CONTRACT
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AuthorityTransferProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<AuthorityTransferMetadata>,
+    /// must be true if the DEX is in safe mode, false otherwise
+    #[prost(bool, tag = "4")]
+    pub in_safe_mode: bool,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AuthorityTransferMetadata {
+    /// the address to set `authority_` to
+    #[prost(string, tag = "1")]
+    pub auth_address: ::prost::alloc::string::String,
+}
+/// HotPathOpenProposal will change the `hotPathOpen_` flag, which controls if users are able to call swap directly on the dex contract
+/// The primary purpose of this seems to be enabling upgradeability of the HotProxy contract, which would require users to switch
+/// to calling CrocSwapDex.userCmd(1, <ABI Encoded Args>) instead of CrocSwapDex.swap(<args>) so that they call the new code.
+/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(22, <open>)>)
+///
+/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, AS IT CAN BREAK INFLEXIBLE DEX USER INTERFACES
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct HotPathOpenProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<HotPathOpenMetadata>,
+    /// must be true if the DEX is in safe mode, false otherwise
+    #[prost(bool, tag = "4")]
+    pub in_safe_mode: bool,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct HotPathOpenMetadata {
+    /// If true, users can call swap directly on the dex contract.
+    /// If false, they must call CrocSwapDex.userCmd(1, <ABI Encoded Args>)
+    #[prost(bool, tag = "1")]
+    pub open: bool,
+}
+/// SetSafeModeProposal will lock down the DEX for emergency changes. This can also be used by the emergency multisig to halt the DEX more quickly.
+/// When the DEX is in safe mode only a UpgradeProxy, CollectTreasury, SetTreasury, AuthorityTransfer, HotPathOpen, or SetSafeMode Proposal can be executed,
+/// and these proposals can only be executed under the SafeMode or Boot Proxy callpaths.
+/// If passes, calls CrocPolicy.treasuryResolution(CrocSwapDex, 3, <ABI Encoded Bytes(23, <lock_dex>)>)
+///
+/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, IT SHOULD ONLY BE USED TO DISABLE THE DEX OR RECOVER FROM DISABLES
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SetSafeModeProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<SetSafeModeMetadata>,
+    /// must be true if the DEX is already in safe mode, false otherwise
+    #[prost(bool, tag = "4")]
+    pub in_safe_mode: bool,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct SetSafeModeMetadata {
+    /// If true, the DEX will be disabled
+    #[prost(bool, tag = "1")]
+    pub lock_dex: bool,
+}
+/// TransferGovernanceProposal will update the governance role addresses on CrocPolicy.
+/// If passes, calls CrocPolicy.transferGovernance(<ops>, <nativedex module address>, <emergency>)
+///
+/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, THE OPS AND EMERGENCY ADDRESSES SHOULD BE CAREFULLY CHOSEN MULTISIGS
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TransferGovernanceProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<TransferGovernanceMetadata>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TransferGovernanceMetadata {
+    /// The address to use for the Ops governance role, the least privileged role
+    #[prost(string, tag = "1")]
+    pub ops: ::prost::alloc::string::String,
+    /// The address to use for the Emergency governance role, which can halt the DEX or perform Ops functions
+    #[prost(string, tag = "2")]
+    pub emergency: ::prost::alloc::string::String,
+}
+/// OpsProposal will execute a non-sudo `protocolCmd()` call on the DEX via CrocPolicy.
+/// If passes, calls CrocPolicy.opsResolution (CrocSwapDex, <callpath>, <ABI Encoded Bytes(<cmd args>)>)
+///
+/// This proposal enables nativedex governance to perform everyday Ops functions on the DEX,
+/// and so the Ops or Emergency addresses could override any decisions made by this proposal.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct OpsProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<OpsMetadata>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct OpsMetadata {
+    /// The callpath index to use, see solidity-dex/contracts/mixins/StorageLayout.sol for the default values
+    #[prost(uint64, tag = "1")]
+    pub callpath: u64,
+    /// The ABI encoded bytes to pass to the opsResolution() call
+    #[prost(bytes = "vec", tag = "2")]
+    pub cmd_args: ::prost::alloc::vec::Vec<u8>,
+}
+/// ExecuteContractProposal will execute an arbitrary contract call from the nativedex module account.
+/// This allows governance to manage contracts owned by the nativedex module, but is restricted
+/// to whitelisted contract addresses to prevent abuse.
+/// If passes, calls the specified contract with the provided data from the nativedex module account.
+///
+/// BE VERY CAREFUL EXECUTING THIS PROPOSAL, AS IT CAN MODIFY CONTRACTS OWNED BY THE NATIVEDEX MODULE
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ExecuteContractProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub metadata: ::core::option::Option<ExecuteContractMetadata>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ExecuteContractMetadata {
+    /// The contract address to call (must be whitelisted in module params)
+    #[prost(string, tag = "1")]
+    pub contract_address: ::prost::alloc::string::String,
+    /// Hex-encoded calldata to send to the contract
+    #[prost(string, tag = "2")]
+    pub data: ::prost::alloc::string::String,
 }

@@ -31,6 +31,11 @@ pub mod althea {
             include!("prost/althea.nativedex.v1.rs");
         }
     }
+    pub mod erc20 {
+        pub mod v1 {
+            include!("prost/althea.erc20.v1.rs");
+        }
+    }
 }
 
 // THIRD PARTY PROTOS MANAGED IN THIS REPO
