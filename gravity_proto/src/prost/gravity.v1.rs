@@ -82,25 +82,6 @@ pub struct AirdropProposal {
     #[prost(uint64, repeated, tag = "5")]
     pub amounts: ::prost::alloc::vec::Vec<u64>,
 }
-/// IBCMetadataProposal defines a custom governance proposal type that allows
-/// governance to set the metadata for an IBC token, this will allow Gravity to
-/// deploy an ERC20 representing this token on Ethereum Name: the token name
-/// Symbol: the token symbol
-/// Description: the token description, not sent to ETH at all, only used on
-/// Cosmos Display: the token display name (only used on Cosmos to decide ERC20
-/// Decimals) Deicmals: the decimals for the display unit ibc_denom is the denom
-/// of the token in question on this chain
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct IbcMetadataProposal {
-    #[prost(string, tag = "1")]
-    pub title: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub metadata: ::core::option::Option<cosmos_sdk_proto::cosmos::bank::v1beta1::Metadata>,
-    #[prost(string, tag = "4")]
-    pub ibc_denom: ::prost::alloc::string::String,
-}
 /// PendingIbcAutoForward represents a SendToCosmos transaction with a foreign
 /// CosmosReceiver which will be added to the PendingIbcAutoForward queue in
 /// attestation_handler and sent over IBC on some submission of a
@@ -1453,9 +1434,9 @@ pub struct Params {
     /// sent from the Gravity Bridge chain to Ethereum. Ethereum-originated assets
     /// (with the "gravity" prefix) are permitted regardless of this list
     /// Tokens not on this list will be blocked from SendToEth and acceptance in ERC20 deploy claims
-    #[prost(string, repeated, tag = "22")]
+    #[prost(message, repeated, tag = "22")]
     pub cosmos_bridgeable_tokens: ::prost::alloc::vec::Vec<
-        ::prost::alloc::string::String,
+        cosmos_sdk_proto::cosmos::bank::v1beta1::Metadata,
     >,
 }
 /// GenesisState struct, containing all persistant data required by the Gravity
