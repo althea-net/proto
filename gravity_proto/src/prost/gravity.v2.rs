@@ -6,6 +6,266 @@ pub struct OutgoingTransferAndBatch {
     #[prost(message, optional, tag = "2")]
     pub batch: ::core::option::Option<super::v1::OutgoingTxBatch>,
 }
+/// MsgUpdateParamsProposal
+/// This message is used by the new x/gov v1 proposal system, it contains an authority
+/// and a collection of params which may be updated in the proposal.
+/// Only the provided params will be updated, and they will all be validated before execution.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParamsProposal {
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "2")]
+    pub param_updates: ::prost::alloc::vec::Vec<Param>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Param {
+    #[prost(string, tag = "1")]
+    pub key: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub value: ::prost::alloc::string::String,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgUpdateParamsProposalResponse {}
+/// MsgAirdropProposal
+/// This message is used by the new x/gov v1 proposal system, it contains an authority
+/// and the previous type used for proposals
+/// AUTHORITY
+/// A string containing the address of the sender, only valid if it is the gov module address
+/// PROPOSAL
+/// This is the previous proposal type, which contains everything needed for the proposal's execution
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgAirdropProposal {
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "2")]
+    pub proposal: ::core::option::Option<super::v1::AirdropProposal>,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgAirdropProposalResponse {}
+/// MsgUnhaltBridgeProposal
+/// This message is used by the new x/gov v1 proposal system, it contains an authority
+/// and the previous type used for proposals
+/// AUTHORITY
+/// A string containing the address of the sender, only valid if it is the gov module address
+/// PROPOSAL
+/// This is the previous proposal type, which contains everything needed for the proposal's execution
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUnhaltBridgeProposal {
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "2")]
+    pub proposal: ::core::option::Option<super::v1::UnhaltBridgeProposal>,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgUnhaltBridgeProposalResponse {}
+/// MsgCosmosBridgeableTokensProposal
+/// This message is used by the new x/gov v1 proposal system, it contains an authority
+/// and the previous type used for proposals
+/// AUTHORITY
+/// A string containing the address of the sender, only valid if it is the gov module address
+/// PROPOSAL
+/// This is the previous proposal type, which contains everything needed for the proposal's execution
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgCosmosBridgeableTokensProposal {
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "2")]
+    pub proposal: ::core::option::Option<super::v1::CosmosBridgeableTokensProposal>,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MsgCosmosBridgeableTokensProposalResponse {}
+/// Generated client implementations.
+pub mod msg_client {
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
+    use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
+    /// Msg defines the state transitions possible within gravity
+    #[derive(Debug, Clone)]
+    pub struct MsgClient<T> {
+        inner: tonic::client::Grpc<T>,
+    }
+    impl MsgClient<tonic::transport::Channel> {
+        /// Attempt to create a new client by connecting to a given endpoint.
+        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
+        where
+            D: TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+    }
+    impl<T> MsgClient<T>
+    where
+        T: tonic::client::GrpcService<tonic::body::BoxBody>,
+        T::Error: Into<StdError>,
+        T::ResponseBody: Body<Data = Bytes> + std::marker::Send + 'static,
+        <T::ResponseBody as Body>::Error: Into<StdError> + std::marker::Send,
+    {
+        pub fn new(inner: T) -> Self {
+            let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
+            Self { inner }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> MsgClient<InterceptedService<T, F>>
+        where
+            F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                >,
+            >,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+        {
+            MsgClient::new(InterceptedService::new(inner, interceptor))
+        }
+        /// Compress requests with the given encoding.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
+            self
+        }
+        /// Enable decompressing responses.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
+            self
+        }
+        pub async fn update_params_proposal(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgUpdateParamsProposal>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgUpdateParamsProposalResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/gravity.v2.Msg/UpdateParamsProposal",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("gravity.v2.Msg", "UpdateParamsProposal"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn airdrop_proposal(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgAirdropProposal>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgAirdropProposalResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/gravity.v2.Msg/AirdropProposal",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("gravity.v2.Msg", "AirdropProposal"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn unhalt_bridge_proposal(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgUnhaltBridgeProposal>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgUnhaltBridgeProposalResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/gravity.v2.Msg/UnhaltBridgeProposal",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("gravity.v2.Msg", "UnhaltBridgeProposal"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn cosmos_bridgeable_tokens_proposal(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgCosmosBridgeableTokensProposal>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgCosmosBridgeableTokensProposalResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/gravity.v2.Msg/CosmosBridgeableTokensProposal",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("gravity.v2.Msg", "CosmosBridgeableTokensProposal"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+    }
+}
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct QueryPendingSendToEthV2 {}
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -203,263 +463,6 @@ pub mod query_client {
                 .insert(
                     GrpcMethod::new("gravity.v2.Query", "GetOutgoingTxBatchesByAddr"),
                 );
-            self.inner.unary(req, path, codec).await
-        }
-    }
-}
-/// MsgUpdateParamsProposal
-/// This message is used by the new x/gov v1 proposal system, it contains an authority
-/// and a collection of params which may be updated in the proposal.
-/// Only the provided params will be updated, and they will all be validated before execution.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUpdateParamsProposal {
-    #[prost(string, tag = "1")]
-    pub authority: ::prost::alloc::string::String,
-    #[prost(message, repeated, tag = "2")]
-    pub param_updates: ::prost::alloc::vec::Vec<Param>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Param {
-    #[prost(string, tag = "1")]
-    pub key: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub value: ::prost::alloc::string::String,
-    /// operation is used for changing CosmosBridgeableTokens, where set means adding/updating
-    /// and remove means deletion. All other param handlers ignore this field.
-    #[prost(enumeration = "ParamOperation", tag = "3")]
-    pub operation: i32,
-}
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgUpdateParamsProposalResponse {}
-/// MsgAirdropProposal
-/// This message is used by the new x/gov v1 proposal system, it contains an authority
-/// and the previous type used for proposals
-/// AUTHORITY
-/// A string containing the address of the sender, only valid if it is the gov module address
-/// PROPOSAL
-/// This is the previous proposal type, which contains everything needed for the proposal's execution
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgAirdropProposal {
-    #[prost(string, tag = "1")]
-    pub authority: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "2")]
-    pub proposal: ::core::option::Option<super::v1::AirdropProposal>,
-}
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgAirdropProposalResponse {}
-/// MsgUnhaltBridgeProposal
-/// This message is used by the new x/gov v1 proposal system, it contains an authority
-/// and the previous type used for proposals
-/// AUTHORITY
-/// A string containing the address of the sender, only valid if it is the gov module address
-/// PROPOSAL
-/// This is the previous proposal type, which contains everything needed for the proposal's execution
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUnhaltBridgeProposal {
-    #[prost(string, tag = "1")]
-    pub authority: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "2")]
-    pub proposal: ::core::option::Option<super::v1::UnhaltBridgeProposal>,
-}
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgUnhaltBridgeProposalResponse {}
-/// ParamOperation is used to indicate how CosmosBridgeableTokens will be updated. Other param handlers ignore this.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
-pub enum ParamOperation {
-    /// PARAM_OPERATION_UNSPECIFIED is the default and is used for most params
-    /// The CosmosBridgeableTokens handler rejects this value.
-    Unspecified = 0,
-    /// PARAM_OPERATION_SET adds a new entry to a list param, or replaces an
-    /// existing entry
-    Set = 1,
-    /// PARAM_OPERATION_REMOVE removes an entry from a list param.
-    Remove = 2,
-}
-impl ParamOperation {
-    /// String value of the enum field names used in the ProtoBuf definition.
-    ///
-    /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
-    pub fn as_str_name(&self) -> &'static str {
-        match self {
-            Self::Unspecified => "PARAM_OPERATION_UNSPECIFIED",
-            Self::Set => "PARAM_OPERATION_SET",
-            Self::Remove => "PARAM_OPERATION_REMOVE",
-        }
-    }
-    /// Creates an enum from field names used in the ProtoBuf definition.
-    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
-        match value {
-            "PARAM_OPERATION_UNSPECIFIED" => Some(Self::Unspecified),
-            "PARAM_OPERATION_SET" => Some(Self::Set),
-            "PARAM_OPERATION_REMOVE" => Some(Self::Remove),
-            _ => None,
-        }
-    }
-}
-/// Generated client implementations.
-pub mod msg_client {
-    #![allow(
-        unused_variables,
-        dead_code,
-        missing_docs,
-        clippy::wildcard_imports,
-        clippy::let_unit_value,
-    )]
-    use tonic::codegen::*;
-    use tonic::codegen::http::Uri;
-    /// Msg defines the state transitions possible within gravity
-    #[derive(Debug, Clone)]
-    pub struct MsgClient<T> {
-        inner: tonic::client::Grpc<T>,
-    }
-    impl MsgClient<tonic::transport::Channel> {
-        /// Attempt to create a new client by connecting to a given endpoint.
-        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-        where
-            D: TryInto<tonic::transport::Endpoint>,
-            D::Error: Into<StdError>,
-        {
-            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
-            Ok(Self::new(conn))
-        }
-    }
-    impl<T> MsgClient<T>
-    where
-        T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::Error: Into<StdError>,
-        T::ResponseBody: Body<Data = Bytes> + std::marker::Send + 'static,
-        <T::ResponseBody as Body>::Error: Into<StdError> + std::marker::Send,
-    {
-        pub fn new(inner: T) -> Self {
-            let inner = tonic::client::Grpc::new(inner);
-            Self { inner }
-        }
-        pub fn with_origin(inner: T, origin: Uri) -> Self {
-            let inner = tonic::client::Grpc::with_origin(inner, origin);
-            Self { inner }
-        }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> MsgClient<InterceptedService<T, F>>
-        where
-            F: tonic::service::Interceptor,
-            T::ResponseBody: Default,
-            T: tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-                Response = http::Response<
-                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
-                >,
-            >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
-        {
-            MsgClient::new(InterceptedService::new(inner, interceptor))
-        }
-        /// Compress requests with the given encoding.
-        ///
-        /// This requires the server to support it otherwise it might respond with an
-        /// error.
-        #[must_use]
-        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
-            self.inner = self.inner.send_compressed(encoding);
-            self
-        }
-        /// Enable decompressing responses.
-        #[must_use]
-        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
-            self.inner = self.inner.accept_compressed(encoding);
-            self
-        }
-        /// Limits the maximum size of a decoded message.
-        ///
-        /// Default: `4MB`
-        #[must_use]
-        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
-            self.inner = self.inner.max_decoding_message_size(limit);
-            self
-        }
-        /// Limits the maximum size of an encoded message.
-        ///
-        /// Default: `usize::MAX`
-        #[must_use]
-        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
-            self.inner = self.inner.max_encoding_message_size(limit);
-            self
-        }
-        pub async fn update_params_proposal(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgUpdateParamsProposal>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgUpdateParamsProposalResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/gravity.v2.Msg/UpdateParamsProposal",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("gravity.v2.Msg", "UpdateParamsProposal"));
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn airdrop_proposal(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgAirdropProposal>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgAirdropProposalResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/gravity.v2.Msg/AirdropProposal",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("gravity.v2.Msg", "AirdropProposal"));
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn unhalt_bridge_proposal(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgUnhaltBridgeProposal>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgUnhaltBridgeProposalResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/gravity.v2.Msg/UnhaltBridgeProposal",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("gravity.v2.Msg", "UnhaltBridgeProposal"));
             self.inner.unary(req, path, codec).await
         }
     }

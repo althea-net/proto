@@ -82,6 +82,30 @@ pub struct AirdropProposal {
     #[prost(uint64, repeated, tag = "5")]
     pub amounts: ::prost::alloc::vec::Vec<u64>,
 }
+/// CosmosBridgeableTokensProposal defines a custom governance proposal type
+/// that allows governance to add or remove entries from the
+/// CosmosBridgeableTokens allowlist. This allows governance to control which
+/// Cosmos tokens are allowed to cross the bridge to Ethereum.
+/// Tokens not on this list will be blocked from SendToEth and acceptance in ERC20 deploy claims.
+///
+/// When operation is SET, the bank module's denom metadata for each listed
+/// denom is unconditionally overwritten with the proposal's metadata, and the
+/// same value is mirrored into the CosmosBridgeableTokens store. When
+/// operation is REMOVE, matching entries are removed from the
+/// CosmosBridgeableTokens store only (bank metadata is left untouched).
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CosmosBridgeableTokensProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "3")]
+    pub metadatas: ::prost::alloc::vec::Vec<
+        cosmos_sdk_proto::cosmos::bank::v1beta1::Metadata,
+    >,
+    #[prost(enumeration = "CosmosBridgeableTokensOperation", tag = "4")]
+    pub operation: i32,
+}
 /// PendingIbcAutoForward represents a SendToCosmos transaction with a foreign
 /// CosmosReceiver which will be added to the PendingIbcAutoForward queue in
 /// attestation_handler and sent over IBC on some submission of a
@@ -104,6 +128,38 @@ pub struct PendingIbcAutoForward {
     /// the EventNonce from the MsgSendToCosmosClaim, used
     #[prost(uint64, tag = "4")]
     pub event_nonce: u64,
+}
+/// CosmosBridgeableTokensOperation indicates how the CosmosBridgeableTokens
+/// list should be updated by a CosmosBridgeableTokensProposal.
+/// SET will add or update the provided entries. REMOVE will remove them, if they exist.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum CosmosBridgeableTokensOperation {
+    Unspecified = 0,
+    Set = 1,
+    Remove = 2,
+}
+impl CosmosBridgeableTokensOperation {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "COSMOS_BRIDGEABLE_TOKENS_OPERATION_UNSPECIFIED",
+            Self::Set => "COSMOS_BRIDGEABLE_TOKENS_OPERATION_SET",
+            Self::Remove => "COSMOS_BRIDGEABLE_TOKENS_OPERATION_REMOVE",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "COSMOS_BRIDGEABLE_TOKENS_OPERATION_UNSPECIFIED" => Some(Self::Unspecified),
+            "COSMOS_BRIDGEABLE_TOKENS_OPERATION_SET" => Some(Self::Set),
+            "COSMOS_BRIDGEABLE_TOKENS_OPERATION_REMOVE" => Some(Self::Remove),
+            _ => None,
+        }
+    }
 }
 /// Components used in MsgSendToCosmosClaim's ClaimHash()
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1299,43 +1355,6 @@ pub mod msg_client {
         }
     }
 }
-/// IDSet represents a set of IDs
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct IdSet {
-    #[prost(uint64, repeated, tag = "1")]
-    pub ids: ::prost::alloc::vec::Vec<u64>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct BatchFees {
-    #[prost(string, tag = "1")]
-    pub token: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub total_fees: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "3")]
-    pub tx_count: u64,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventWithdrawalReceived {
-    #[prost(string, tag = "1")]
-    pub bridge_contract: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub bridge_chain_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub outgoing_tx_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub nonce: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventWithdrawCanceled {
-    #[prost(string, tag = "1")]
-    pub sender: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub tx_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub bridge_contract: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub bridge_chain_id: ::prost::alloc::string::String,
-}
 /// The slashing fractions for the various gravity related slashing conditions.
 /// The first three refer to not submitting a particular message, the third for
 /// submitting a different claim for the same Ethereum event
@@ -1384,6 +1403,14 @@ pub struct EventWithdrawCanceled {
 /// Specifies what fraction of the SendToEth `chain_fee` amount should go to the
 /// auction pool. e.g. "0.5" gives a 50% auction pool / staker split while "0.9"
 /// would cause 90% of the fee to go to the pool
+///
+/// cosmos_bridgeable_tokens
+///
+/// A whitelist of Cosmos-originated token denoms that are permitted to be
+/// sent from Cosmos to Ethereum. This list does not affect Ethereum-originated assets
+/// (with the "gravity" prefix), which are permitted regardless.
+/// Tokens not on this list will be blocked from SendToEth and acceptance in
+/// ERC20 deploy claims.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
     #[prost(string, tag = "1")]
@@ -1428,16 +1455,6 @@ pub struct Params {
     pub min_chain_fee_basis_points: u64,
     #[prost(string, tag = "21")]
     pub chain_fee_auction_pool_fraction: ::prost::alloc::string::String,
-    /// cosmos_bridgeable_tokens
-    ///
-    /// A whitelist of Cosmos-originated token denoms that are permitted to be
-    /// sent from the Gravity Bridge chain to Ethereum. Ethereum-originated assets
-    /// (with the "gravity" prefix) are permitted regardless of this list
-    /// Tokens not on this list will be blocked from SendToEth and acceptance in ERC20 deploy claims
-    #[prost(message, repeated, tag = "22")]
-    pub cosmos_bridgeable_tokens: ::prost::alloc::vec::Vec<
-        cosmos_sdk_proto::cosmos::bank::v1beta1::Metadata,
-    >,
 }
 /// GenesisState struct, containing all persistant data required by the Gravity
 /// module
@@ -1475,6 +1492,10 @@ pub struct GenesisState {
     /// vouchers will be redeemable for ethereum tokens.
     #[prost(string, repeated, tag = "14")]
     pub remapped_erc20s: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(message, repeated, tag = "15")]
+    pub cosmos_bridgeable_tokens: ::prost::alloc::vec::Vec<
+        cosmos_sdk_proto::cosmos::bank::v1beta1::Metadata,
+    >,
 }
 /// GravityCounters contains the many noces and counters required to maintain the
 /// bridge state in the genesis
@@ -1505,6 +1526,43 @@ pub struct GravityNonces {
     /// during chain upgrades
     #[prost(uint64, tag = "7")]
     pub last_batch_id: u64,
+}
+/// IDSet represents a set of IDs
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct IdSet {
+    #[prost(uint64, repeated, tag = "1")]
+    pub ids: ::prost::alloc::vec::Vec<u64>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct BatchFees {
+    #[prost(string, tag = "1")]
+    pub token: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub total_fees: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "3")]
+    pub tx_count: u64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EventWithdrawalReceived {
+    #[prost(string, tag = "1")]
+    pub bridge_contract: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub bridge_chain_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub outgoing_tx_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub nonce: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EventWithdrawCanceled {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub tx_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub bridge_contract: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub bridge_chain_id: ::prost::alloc::string::String,
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
@@ -1814,6 +1872,17 @@ pub struct QueryPendingIbcAutoForwards {
 pub struct QueryPendingIbcAutoForwardsResponse {
     #[prost(message, repeated, tag = "1")]
     pub pending_ibc_auto_forwards: ::prost::alloc::vec::Vec<PendingIbcAutoForward>,
+}
+/// QueryCosmosBridgeableTokensRequest requests the full list of the current
+/// CosmosBridgeableTokens allowlist entries.
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct QueryCosmosBridgeableTokensRequest {}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryCosmosBridgeableTokensResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub cosmos_bridgeable_tokens: ::prost::alloc::vec::Vec<
+        cosmos_sdk_proto::cosmos::bank::v1beta1::Metadata,
+    >,
 }
 /// Generated client implementations.
 pub mod query_client {
@@ -2547,6 +2616,30 @@ pub mod query_client {
                 .insert(
                     GrpcMethod::new("gravity.v1.Query", "GetPendingIbcAutoForwards"),
                 );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn cosmos_bridgeable_tokens(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryCosmosBridgeableTokensRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryCosmosBridgeableTokensResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/gravity.v1.Query/CosmosBridgeableTokens",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("gravity.v1.Query", "CosmosBridgeableTokens"));
             self.inner.unary(req, path, codec).await
         }
     }
