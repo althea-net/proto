@@ -28,7 +28,7 @@ dependencies = [
 
 [[package]]
 name = "althea_proto"
-version = "0.9.4"
+version = "0.11.0"
 dependencies = [
  "cosmos-sdk-proto-althea",
  "prost",
