@@ -21,11 +21,8 @@ pub struct GenesisState {
     #[prost(message, repeated, tag = "2")]
     pub hrp_ibc_records: ::prost::alloc::vec::Vec<HrpIbcRecord>,
 }
-/// UpdateHrpIBCRecordProposal is a gov Content type for adding a new record
-/// between a bech32 prefix and an IBC (port, channel).
-/// It can be used to add a new record to the set. It can also be.
-/// used to update the IBC channel to associate with a specific denom. If channel
-/// is set to "", it will remove the record from the set.
+/// UpdateHrpIBCRecordProposal is a gov Content type for adding or updating a
+/// record between a bech32 prefix and an IBC (port, channel).
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateHrpIbcChannelProposal {
     #[prost(string, tag = "1")]
@@ -40,6 +37,17 @@ pub struct UpdateHrpIbcChannelProposal {
     pub ics_to_height_offset: u64,
     #[prost(message, optional, tag = "6")]
     pub ics_to_time_offset: ::core::option::Option<::prost_types::Duration>,
+}
+/// DeleteHrpIbcChannelProposal is a gov Content type for removing an existing
+/// record between a bech32 prefix and an IBC (port, channel).
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct DeleteHrpIbcChannelProposal {
+    #[prost(string, tag = "1")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub hrp: ::prost::alloc::string::String,
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct QueryHrpIbcRecordsRequest {}
